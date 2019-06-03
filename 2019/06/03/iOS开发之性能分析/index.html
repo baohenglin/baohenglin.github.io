@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="《iOS之性能优化篇》&amp;emsp;&amp;emsp;App具有良好的用户体验对用户而言是非常重要的。业界诸多优秀的App都具有“启动速度快、运行流畅不卡顿、耗电量少且安装包体积小”的特点。那么为了提升App的用户体验，我们开发者应该如何进行性能优化呢？ &amp;emsp;&amp;emsp;我们可以围绕卡顿与否（流畅度）、耗电情况、启动时间以及安装包瘦身等四个方面来着手进行优化。 1.流畅度（卡顿方面）1.1屏幕显示">
+<meta name="description" content="《iOS之性能优化篇》&amp;emsp;&amp;emsp;对用户而言,App具有良好的用户体验是非常重要的。业界诸多优秀的App都具有“启动速度快、运行流畅不卡顿、耗电量少且安装包体积小”的特点。那么为了提升App的用户体验，我们开发者应该如何进行性能优化呢？ &amp;emsp;&amp;emsp;我们可以围绕卡顿与否（流畅度）、耗电情况、启动时间以及安装包瘦身等四个方面来着手进行优化。 1.流畅度（卡顿方面）1.1屏幕显">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS开发之性能分析">
 <meta property="og:url" content="http://yoursite.com/2019/06/03/iOS开发之性能分析/index.html">
 <meta property="og:site_name" content="平凡的世界">
-<meta property="og:description" content="《iOS之性能优化篇》&amp;emsp;&amp;emsp;App具有良好的用户体验对用户而言是非常重要的。业界诸多优秀的App都具有“启动速度快、运行流畅不卡顿、耗电量少且安装包体积小”的特点。那么为了提升App的用户体验，我们开发者应该如何进行性能优化呢？ &amp;emsp;&amp;emsp;我们可以围绕卡顿与否（流畅度）、耗电情况、启动时间以及安装包瘦身等四个方面来着手进行优化。 1.流畅度（卡顿方面）1.1屏幕显示">
+<meta property="og:description" content="《iOS之性能优化篇》&amp;emsp;&amp;emsp;对用户而言,App具有良好的用户体验是非常重要的。业界诸多优秀的App都具有“启动速度快、运行流畅不卡顿、耗电量少且安装包体积小”的特点。那么为了提升App的用户体验，我们开发者应该如何进行性能优化呢？ &amp;emsp;&amp;emsp;我们可以围绕卡顿与否（流畅度）、耗电情况、启动时间以及安装包瘦身等四个方面来着手进行优化。 1.流畅度（卡顿方面）1.1屏幕显">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-fe2be48c935d35bb.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="https://blog.ibireme.com/wp-content/uploads/2015/11/ios_screen_display.png">
@@ -93,10 +93,10 @@
 <meta property="og:image" content="https://blog.ibireme.com/wp-content/uploads/2015/11/ios_frame_drop.png">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-b44e6ef4a73c9fee.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-663a80feaee23044.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2019-06-03T04:37:39.447Z">
+<meta property="og:updated_time" content="2019-06-03T04:38:56.740Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS开发之性能分析">
-<meta name="twitter:description" content="《iOS之性能优化篇》&amp;emsp;&amp;emsp;App具有良好的用户体验对用户而言是非常重要的。业界诸多优秀的App都具有“启动速度快、运行流畅不卡顿、耗电量少且安装包体积小”的特点。那么为了提升App的用户体验，我们开发者应该如何进行性能优化呢？ &amp;emsp;&amp;emsp;我们可以围绕卡顿与否（流畅度）、耗电情况、启动时间以及安装包瘦身等四个方面来着手进行优化。 1.流畅度（卡顿方面）1.1屏幕显示">
+<meta name="twitter:description" content="《iOS之性能优化篇》&amp;emsp;&amp;emsp;对用户而言,App具有良好的用户体验是非常重要的。业界诸多优秀的App都具有“启动速度快、运行流畅不卡顿、耗电量少且安装包体积小”的特点。那么为了提升App的用户体验，我们开发者应该如何进行性能优化呢？ &amp;emsp;&amp;emsp;我们可以围绕卡顿与否（流畅度）、耗电情况、启动时间以及安装包瘦身等四个方面来着手进行优化。 1.流畅度（卡顿方面）1.1屏幕显">
 <meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/4164292-fe2be48c935d35bb.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 
 
@@ -327,7 +327,7 @@
       
 
       
-        <h3 id="《iOS之性能优化篇》"><a href="#《iOS之性能优化篇》" class="headerlink" title="《iOS之性能优化篇》"></a>《iOS之性能优化篇》</h3><p>&emsp;&emsp;App具有良好的用户体验对用户而言是非常重要的。业界诸多优秀的App都具有“启动速度快、运行流畅不卡顿、耗电量少且安装包体积小”的特点。那么为了提升App的用户体验，我们开发者应该如何进行性能优化呢？</p>
+        <h3 id="《iOS之性能优化篇》"><a href="#《iOS之性能优化篇》" class="headerlink" title="《iOS之性能优化篇》"></a>《iOS之性能优化篇》</h3><p>&emsp;&emsp;对用户而言,App具有良好的用户体验是非常重要的。业界诸多优秀的App都具有“启动速度快、运行流畅不卡顿、耗电量少且安装包体积小”的特点。那么为了提升App的用户体验，我们开发者应该如何进行性能优化呢？</p>
 <p>&emsp;&emsp;我们可以围绕卡顿与否（流畅度）、耗电情况、启动时间以及安装包瘦身等四个方面来着手进行优化。</p>
 <h3 id="1-流畅度（卡顿方面）"><a href="#1-流畅度（卡顿方面）" class="headerlink" title="1.流畅度（卡顿方面）"></a><em>1.流畅度（卡顿方面）</em></h3><h4 id="1-1屏幕显示图像的原理"><a href="#1-1屏幕显示图像的原理" class="headerlink" title="1.1屏幕显示图像的原理"></a>1.1屏幕显示图像的原理</h4><p>&emsp;&emsp;在设备屏幕成像的过程中，CPU和GPU起着至关重要的作用。CPU（Central Processing Unit,中央处理器）主要处理的事物包括对象的创建与销毁、对象属性的调整、布局计算、文本的计算与排版（渲染）、图片格式的转换和解码、图像的绘制（Core Graphics）等。GPU（Graphics Processing Unit，图形处理器）主要负责纹理的渲染、视图的混合以及图形的生成。那么屏幕显示图像的原理是怎样的呢？</p>
 <p>&emsp;&emsp;以下有关屏幕显示图像原理和卡顿原因的论述直接引用的ibireme大神的博客内容，详情请查阅<a href="https://blog.ibireme.com/2015/11/12/smooth_user_interfaces_for_ios/" target="_blank" rel="noopener">iOS保持界面流畅的技巧</a></p>
