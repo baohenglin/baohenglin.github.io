@@ -386,7 +386,7 @@
 <p>&emsp;&emsp;✅（6）类的成员变量描述信息（ivar），此处的成员变量信息指的是成员变量的类型、成员变量的名称等，而不是指“实例对象的内存中存储的成员变量的具体值”。</p>
 <p>&emsp;&emsp;✅ （7）…</p>
 <p>class对象的内存存储信息示意图，具体如下：</p>
-<p><img src="/.com//class对象存储信息图001.png" alt="class对象的内存存储信息示意图" title="class对象的内存存储信息示意图"></p>
+<p><img src="/.com/2019-06-03-OC对象的本质/class对象存储信息图001.png" alt="class对象的内存存储信息示意图" title="class对象的内存存储信息示意图"></p>
 <ul>
 <li>meta-class对象（元类对象）</li>
 </ul>
@@ -398,12 +398,12 @@
 <p>&emsp;&emsp;✅ （3）类的类方法信息（class method）</p>
 <p>&emsp;&emsp;✅ （4）…</p>
 <p>meta-class对象的内存存储信息示意图，如下所示</p>
-<p><img src="/.com//meta-class内存存储信息示意图.jpg" alt="meta-class对象的内存存储信息示意图" title="meta-class对象的内存存储信息示意图"></p>
+<p><img src="/.com/2019-06-03-OC对象的本质/meta-class内存存储信息示意图.jpg" alt="meta-class对象的内存存储信息示意图" title="meta-class对象的内存存储信息示意图"></p>
 <p>【总结】通过Objective-C 2.0最新苹果源码objc4-750可以一层层探究 struct objc_class 的结构。其实class对象（类对象）和meta-class对象（元类对象）底层实现的数据结构一样的，都是struct objc_class结构体这样的数据结构。区别仅在于meta-class的方法列表(method_list_t <em> methods) 里存放的是类方法，而不是对象方法，再就是属性列表(property_list_t </em> properties)里存放的是nil，协议列表(const protocol_list_t <em> protocols)里存放的也是nil，成员变量列表(const ivar_list_t </em>ivars)存放的也是nil而已。</p>
 <p>struct objc_class在Apple源码objc4-750中的底层实现结构图，如下图所示：</p>
-<p><img src="/.com//struct objc_class底层实现结构图.png" alt="struct objc_class底层结构示意图" title="struct objc_class底层结构示意图"></p>
+<p><img src="/.com/2019-06-03-OC对象的本质/struct objc_class底层实现结构图.png" alt="struct objc_class底层结构示意图" title="struct objc_class底层结构示意图"></p>
 <h4 id="1-4-isa指针"><a href="#1-4-isa指针" class="headerlink" title="1.4 isa指针"></a>1.4 isa指针</h4><p>&emsp;&emsp;isa指针作用示意图，如下：</p>
-<p><img src="/.com//isa指针的作用.png" alt="isa指针作用示意图" title="isa指针作用示意图"></p>
+<p><img src="/.com/2019-06-03-OC对象的本质/isa指针的作用.png" alt="isa指针作用示意图" title="isa指针作用示意图"></p>
 <p>&emsp;&emsp;由上图可知，</p>
 <ul>
 <li>（1）instance对象（实例对象）的isa指针指向class对象（类对象）</li>
@@ -428,7 +428,7 @@
 </li>
 </ul>
 <p>student实例对象调用方法原理示意图，如下：</p>
-<p><img src="/.com//isa和superclass指针.png" alt="student实例对象调用方法原理示意图" title="student实例对象调用方法原理示意图"></p>
+<p><img src="/.com/2019-06-03-OC对象的本质/isa和superclass指针.png" alt="student实例对象调用方法原理示意图" title="student实例对象调用方法原理示意图"></p>
 <p>【总结】class对象（类对象）的superclass指针指向其父类的class对象（类对象）。</p>
 <h5 id="1-5-2-meta-class对象（元类对象）的superclass"><a href="#1-5-2-meta-class对象（元类对象）的superclass" class="headerlink" title="1.5.2 meta-class对象（元类对象）的superclass"></a>1.5.2 meta-class对象（元类对象）的superclass</h5><p>&emsp;&emsp;meta-class对象（元类对象）的superclass指针的作用如下：</p>
 <p>&emsp;&emsp;&emsp;&emsp;meta-class对象（元类对象）的superclass指针指向其父类的meta-class对象（元类对象）。</p>
@@ -440,7 +440,7 @@
 </ul>
 <p>【总结】meta-class对象（元类对象）的superclass指针指向其父类的meta-class对象（元类对象）。</p>
 <h4 id="1-6-isa和superclass总结"><a href="#1-6-isa和superclass总结" class="headerlink" title="1.6 isa和superclass总结"></a>1.6 isa和superclass总结</h4><p>&emsp;&emsp;下面这张图详细地解释了isa指针和superclass指针各自的作用。</p>
-<p><img src="/.com//isa和superclass指针总结.png" alt="isa和superclass作用示意图" title="isa和superclass作用示意图"></p>
+<p><img src="/.com/2019-06-03-OC对象的本质/isa和superclass指针总结.png" alt="isa和superclass作用示意图" title="isa和superclass作用示意图"></p>
 <p>&emsp;&emsp;这张图涉及到三个类，这三个类分别是Subclass(子类)、Super class(父类)、Rootclass(基类)。此外，还清晰地指出了这三个类各自的instance对象、class对象和meta-class对象。此处的Subclass(子类)、Super class(父类)、Rootclass(基类)分别对应上面代码的HLStudent类、HLPerson类和NSObject类。</p>
 <p>&emsp;&emsp;上图中，虚线表示isa指向，实线表示superclass指向。</p>
 <p>【isa总结】：</p>
