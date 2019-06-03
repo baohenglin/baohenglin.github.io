@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="《iOS之Objective-C对象的本质》&amp;emsp;&amp;emsp;我们平时编写的Objective-C代码，其底层实现都是C/C++代码，也就是说编译时编译器会先将Objective-C代码转化为C/C++代码，然后再将C/C++代码转化为更为低级的汇编语言，最后再将汇编语言转化为机器语言并运行到终端设备上。 &amp;emsp;&amp;emsp;Objective-C的面向对象都是基于C/C++的数据结构实">
+<meta name="description" content="《iOS之Objective-C对象的本质》&amp;emsp;&amp;emsp;我们平时编写的Objective-C代码，其底层都是由C/C++代码实现的，也就是说编译时编译器会先将Objective-C代码转化为C/C++代码，然后再将C/C++代码转化为更为低级的汇编语言，最后再将汇编语言转化为机器语言并运行到终端设备上。 &amp;emsp;&amp;emsp;Objective-C的面向对象都是基于C/C++的数据结">
 <meta name="keywords" content="OC对象">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Objective-C对象的本质分析">
 <meta property="og:url" content="http://yoursite.com/2019/06/03/Objective-C对象的本质分析/index.html">
 <meta property="og:site_name" content="平凡的世界">
-<meta property="og:description" content="《iOS之Objective-C对象的本质》&amp;emsp;&amp;emsp;我们平时编写的Objective-C代码，其底层实现都是C/C++代码，也就是说编译时编译器会先将Objective-C代码转化为C/C++代码，然后再将C/C++代码转化为更为低级的汇编语言，最后再将汇编语言转化为机器语言并运行到终端设备上。 &amp;emsp;&amp;emsp;Objective-C的面向对象都是基于C/C++的数据结构实">
+<meta property="og:description" content="《iOS之Objective-C对象的本质》&amp;emsp;&amp;emsp;我们平时编写的Objective-C代码，其底层都是由C/C++代码实现的，也就是说编译时编译器会先将Objective-C代码转化为C/C++代码，然后再将C/C++代码转化为更为低级的汇编语言，最后再将汇编语言转化为机器语言并运行到终端设备上。 &amp;emsp;&amp;emsp;Objective-C的面向对象都是基于C/C++的数据结">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-e6e53caa685bee99.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-c7f00e618e24e465.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
@@ -93,10 +93,10 @@
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-e4981d0fd687bfb8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-c3184916084d8e92.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-3ebf2e1b0ee4ee5e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2019-06-03T04:27:34.795Z">
+<meta property="og:updated_time" content="2019-06-03T04:28:25.735Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Objective-C对象的本质分析">
-<meta name="twitter:description" content="《iOS之Objective-C对象的本质》&amp;emsp;&amp;emsp;我们平时编写的Objective-C代码，其底层实现都是C/C++代码，也就是说编译时编译器会先将Objective-C代码转化为C/C++代码，然后再将C/C++代码转化为更为低级的汇编语言，最后再将汇编语言转化为机器语言并运行到终端设备上。 &amp;emsp;&amp;emsp;Objective-C的面向对象都是基于C/C++的数据结构实">
+<meta name="twitter:description" content="《iOS之Objective-C对象的本质》&amp;emsp;&amp;emsp;我们平时编写的Objective-C代码，其底层都是由C/C++代码实现的，也就是说编译时编译器会先将Objective-C代码转化为C/C++代码，然后再将C/C++代码转化为更为低级的汇编语言，最后再将汇编语言转化为机器语言并运行到终端设备上。 &amp;emsp;&amp;emsp;Objective-C的面向对象都是基于C/C++的数据结">
 <meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/4164292-e6e53caa685bee99.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 
 
@@ -349,7 +349,7 @@
       
 
       
-        <h3 id="《iOS之Objective-C对象的本质》"><a href="#《iOS之Objective-C对象的本质》" class="headerlink" title="《iOS之Objective-C对象的本质》"></a>《iOS之Objective-C对象的本质》</h3><p>&emsp;&emsp;我们平时编写的Objective-C代码，其底层实现都是C/C++代码，也就是说编译时编译器会先将Objective-C代码转化为C/C++代码，然后再将C/C++代码转化为更为低级的汇编语言，最后再将汇编语言转化为机器语言并运行到终端设备上。</p>
+        <h3 id="《iOS之Objective-C对象的本质》"><a href="#《iOS之Objective-C对象的本质》" class="headerlink" title="《iOS之Objective-C对象的本质》"></a>《iOS之Objective-C对象的本质》</h3><p>&emsp;&emsp;我们平时编写的Objective-C代码，其底层都是由C/C++代码实现的，也就是说编译时编译器会先将Objective-C代码转化为C/C++代码，然后再将C/C++代码转化为更为低级的汇编语言，最后再将汇编语言转化为机器语言并运行到终端设备上。</p>
 <p>&emsp;&emsp;Objective-C的面向对象都是基于C/C++的数据结构实现的。那么是基于C/C++的什么数据结构实现的呢？答案是结构体(Struct)！</p>
 <h4 id="1-1-将OC代码转化为底层的C-C"><a href="#1-1-将OC代码转化为底层的C-C" class="headerlink" title="1.1 将OC代码转化为底层的C/C++"></a>1.1 将OC代码转化为底层的C/C++</h4><p>&emsp;&emsp;为了研究Objective-C对象的底层实现，我们需要将Objective-C代码转为底层的C/C++代码，那么具体如何转化呢？</p>
 <p>&emsp;&emsp;在Xcode中，选择macOS-&gt;Command Line Tool，新建一个工程。此时项目中会自动生成一个main.m的文件。main.m中代码如下：</p>
