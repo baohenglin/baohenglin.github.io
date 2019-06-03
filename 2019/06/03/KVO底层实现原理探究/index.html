@@ -89,8 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-20aacf99194a2133.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-44308711bc0fc44f.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-20aacf99194a2133.jpeg">
-<meta property="og:updated_time" content="2019-06-03T06:28:27.423Z">
+<meta property="og:updated_time" content="2019-06-03T06:40:53.925Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="KVO底层实现原理探究">
 <meta name="twitter:description" content="1. KVO基础知识&amp;emsp;&amp;emsp;KVO全称为Key-Value Observing,也称为“键值监听”，主要用于监听某个对象的属性值的改变。 1.1 KVO的基本使用12345678910111213141516171819202122232425262728293031323334353637383940414243#import &amp;quot;ViewController.h&amp;quo">
@@ -373,7 +372,6 @@
 <p>题目3：直接修改成员变量会触发KVO吗？</p>
 <p>&emsp;&emsp;不会触发KVO(直接修改成员变量不会调用该属性的setter方法)。KVO的实现原理是利用Runtime动态生成一个子类，并且让instance对象的isa指向这个全新的子类，并且这个全新的子类重写了setter方法、class方法、dealloc方法、_isKVOA方法。当修改instance对象的属性时，重写的setter方法会调用Foundation的_NSSetXXXValueAndNotify函数，在_NSSetXXXValueAndNotify函数内部会先调用willChangeValueForKey:方法，然后调用父类原来的setter方法，最后调用didChangeValueForKey:方法，并在didChangeValueForKey方法内部触发监听器（Oberser）的监听方法（observeValueForKeyPath:ofObject:change:context:）。由于直接修改成员变量不会调用该属性的setter方法，所以不会触发KVO。</p>
 <p>&emsp;&emsp;此时我们可以手动触发KVO监听。也就是手动调用willChangeValueForKey:和didChangeValueForKey:这两个方法。</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/4164292-20aacf99194a2133.jpeg" alt></p>
 
       
     </div>
