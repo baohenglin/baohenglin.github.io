@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="点滴感悟,">
+  <meta name="keywords" content="KVC,">
 
 
 
@@ -79,18 +79,21 @@
 
 
 
-<meta name="description" content="从心开始,扬帆起航&amp;emsp;&amp;emsp;自2015年开始学习iOS软件开发以来，转眼间，已经将近4年了。一路走来，有喜悦，有收获，有迷茫，也有困惑。不过令自己欣慰的是，自己始终在技术这条道路上坚持着。我内心坚信只要不断努力，坚持付出，日益精进，终有“会当凌绝顶，一览众山小”的那一刻！&amp;emsp;&amp;emsp;目前自己在iOS开发方面基础知识还不够扎实，对底层原理了解不够，甚至一知半解，也就是说对专">
-<meta name="keywords" content="点滴感悟">
+<meta name="description" content="KVC底层原理分析KVC的全称是Key-Value Coding，俗称“键值编码”，可以通过一个key来访问某个属性。 KVC常用的API有：  -(void)setValue:(id)value forKeyPath:(NSString *)keyPath; -(void)setValue:(id)value forKey:(NSString *)key; -(id)valueForKeyPat">
+<meta name="keywords" content="KVC">
 <meta property="og:type" content="article">
-<meta property="og:title" content="千里之行  始于足下">
-<meta property="og:url" content="http://yoursite.com/2019/03/20/千里之行，始于足下/index.html">
+<meta property="og:title" content="KVC的底层实现原理">
+<meta property="og:url" content="http://yoursite.com/2019/06/06/KVC的底层实现原理/index.html">
 <meta property="og:site_name" content="平凡的世界">
-<meta property="og:description" content="从心开始,扬帆起航&amp;emsp;&amp;emsp;自2015年开始学习iOS软件开发以来，转眼间，已经将近4年了。一路走来，有喜悦，有收获，有迷茫，也有困惑。不过令自己欣慰的是，自己始终在技术这条道路上坚持着。我内心坚信只要不断努力，坚持付出，日益精进，终有“会当凌绝顶，一览众山小”的那一刻！&amp;emsp;&amp;emsp;目前自己在iOS开发方面基础知识还不够扎实，对底层原理了解不够，甚至一知半解，也就是说对专">
+<meta property="og:description" content="KVC底层原理分析KVC的全称是Key-Value Coding，俗称“键值编码”，可以通过一个key来访问某个属性。 KVC常用的API有：  -(void)setValue:(id)value forKeyPath:(NSString *)keyPath; -(void)setValue:(id)value forKey:(NSString *)key; -(id)valueForKeyPat">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-03T09:57:04.827Z">
+<meta property="og:image" content="http://yoursite.com/images/setValueForKey原理示意图.png">
+<meta property="og:image" content="http://yoursite.com/images/valueForKey取值的原理示意图.png">
+<meta property="og:updated_time" content="2019-06-06T03:17:09.762Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="千里之行  始于足下">
-<meta name="twitter:description" content="从心开始,扬帆起航&amp;emsp;&amp;emsp;自2015年开始学习iOS软件开发以来，转眼间，已经将近4年了。一路走来，有喜悦，有收获，有迷茫，也有困惑。不过令自己欣慰的是，自己始终在技术这条道路上坚持着。我内心坚信只要不断努力，坚持付出，日益精进，终有“会当凌绝顶，一览众山小”的那一刻！&amp;emsp;&amp;emsp;目前自己在iOS开发方面基础知识还不够扎实，对底层原理了解不够，甚至一知半解，也就是说对专">
+<meta name="twitter:title" content="KVC的底层实现原理">
+<meta name="twitter:description" content="KVC底层原理分析KVC的全称是Key-Value Coding，俗称“键值编码”，可以通过一个key来访问某个属性。 KVC常用的API有：  -(void)setValue:(id)value forKeyPath:(NSString *)keyPath; -(void)setValue:(id)value forKey:(NSString *)key; -(id)valueForKeyPat">
+<meta name="twitter:image" content="http://yoursite.com/images/setValueForKey原理示意图.png">
 
 
 
@@ -120,13 +123,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/03/20/千里之行，始于足下/">
+  <link rel="canonical" href="http://yoursite.com/2019/06/06/KVC的底层实现原理/">
 
 
 
 
 
-  <title>千里之行  始于足下 | 平凡的世界</title>
+  <title>KVC的底层实现原理 | 平凡的世界</title>
   
 
 
@@ -253,7 +256,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/20/千里之行，始于足下/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/06/KVC的底层实现原理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="BaoHengLin">
@@ -270,7 +273,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">千里之行  始于足下</h1>
+          <h1 class="post-title" itemprop="name headline">KVC的底层实现原理</h1>
         
 
         <div class="post-meta">
@@ -282,8 +285,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-20T22:11:49+08:00">
-                2019-03-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-06T11:11:10+08:00">
+                2019-06-06
               </time>
             
 
@@ -305,8 +308,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Thinking/" itemprop="url" rel="index">
-                    <span itemprop="name">Thinking</span>
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
                   </a>
                 </span>
 
@@ -342,8 +345,30 @@
       
 
       
-        <h1 id="从心开始-扬帆起航"><a href="#从心开始-扬帆起航" class="headerlink" title="从心开始,扬帆起航"></a>从心开始,扬帆起航</h1><p>&emsp;&emsp;自2015年开始学习iOS软件开发以来，转眼间，已经将近4年了。一路走来，有喜悦，有收获，有迷茫，也有困惑。不过令自己欣慰的是，自己始终在技术这条道路上坚持着。我内心坚信只要不断努力，坚持付出，日益精进，终有“会当凌绝顶，一览众山小”的那一刻！<br>&emsp;&emsp;目前自己在iOS开发方面基础知识还不够扎实，对底层原理了解不够，甚至一知半解，也就是说对专业知识掌握的深度不够。此外，技术视野的宽度亟待拓展。现在是原生与前端共舞的时代，仅仅掌握iOS开发知识是远远不能满足企业招聘要求的。React Native、Flutter、HTML5、JavaScript、小程序等跨端开发知识都应该积极地去拥抱和学习。就像戴铭老师在其技术专栏中所讲的那样“这些技术看似纷繁杂乱，实则殊途同归。它们背后都是一些通用的底层技术和创新的设计思想。只要静下心来好好研究下近几年浪潮留下的关键技术，在这个基础上再去理解各种新技术，必然会驾轻就熟。”，沉下心来慢慢学，勤思多练，学深学透，方能达到举一反三，融会贯通的学习目标。</p>
-<h1 id="不破楼兰终不还"><a href="#不破楼兰终不还" class="headerlink" title="不破楼兰终不还"></a>不破楼兰终不还</h1><p>&emsp;&emsp;我们每一个技术手艺人都不应该将自己局限于某一个特定的技术领域，要“一专多能”。陈皓老师在其极客时间技术专栏《左耳听风》中向我们展示了精彩纷呈的编程世界，也详尽阐述了从码农到程序员再到架构师的练级攻略。这也让我意识到了“码农”、“程序员”、“工程师”和“架构师”之间的差别。“有修养的程序员才有可能成长为真正的工程师和架构师，而没有修养的程序员只能沦为码农，这是码农和工程师的关键区分点。“<br>&emsp;&emsp;摒弃理论知识无用的错误观点。自己之所以感觉理论知识没什么用，是因为自己还处于初级水平，还没有找到相应的应用场景来感受那些理论知识的强大威力。数据结构与算法、操作系统、编译原理、数据库原理、计算机原理……这些基础的理论知识，是你想要成为一个专家必须要学习的，更何况这些知识都是计算机这门科学最为经典且充满思想智慧的精华。<br>&emsp;&emsp;自己未来要走的路还很长，需要学习的东西还有很多。要拿出“十年磨一剑”的决心和魄力来不断突破自己，提升实力。“黄沙百战穿金甲，不破楼兰终不还”！祝福自己，也祝福每一个有技术信仰的程序员越来越优秀！</p>
+        <h1 id="KVC底层原理分析"><a href="#KVC底层原理分析" class="headerlink" title="KVC底层原理分析"></a>KVC底层原理分析</h1><p>KVC的全称是Key-Value Coding，俗称“键值编码”，可以通过一个key来访问某个属性。</p>
+<p>KVC常用的API有：</p>
+<ul>
+<li>-(void)setValue:(id)value forKeyPath:(NSString *)keyPath;</li>
+<li>-(void)setValue:(id)value forKey:(NSString *)key;</li>
+<li>-(id)valueForKeyPath:(NSString *)keyPath;</li>
+<li>-(id)valueForKey:(NSString *)key;</li>
+</ul>
+<p>前两个是用来设置属性值的，后两个是用来获取属性值的。</p>
+<h2 id="赋值方法setValue-forKey-的原理"><a href="#赋值方法setValue-forKey-的原理" class="headerlink" title="赋值方法setValue:forKey:的原理"></a>赋值方法setValue:forKey:的原理</h2><p>setValue:forKey:的原理示意图，如下：</p>
+<p><img src="/images/setValueForKey原理示意图.png" alt="setValueForKey原理示意图" title="setValueForKey原理示意图"></p>
+<p>setValue:forKey:底层实现的方法调用顺序如下：</p>
+<p>（1）首先会按照顺序依次查找setKey:方法和_setKey:方法，只要找到这两个方法当中的任何一个就直接传递参数，调用方法；</p>
+<p>（2）如果没有找到setKey:和_setKey:方法，那么这个时候会查看accessInstanceVariablesDirectly方法的返回值，如果返回的是NO（也就是不允许直接访问成员变量），那么会调用setValue:forUndefineKey:方法，并抛出异常“NSUnknownKeyException”；</p>
+<p>（3）如果accessInstanceVariablesDirectly方法返回的是YES，也就是说可以访问其成员变量，那么就会按照顺序依次查找 _key、_isKey、key、isKey这四个成员变量，如果查找到了，就直接赋值；如果依然没有查到，那么会调用setValue:forUndefineKey:方法，并抛出异常“NSUnknownKeyException”。</p>
+<h2 id="取值方法valueForKey-的原理"><a href="#取值方法valueForKey-的原理" class="headerlink" title="取值方法valueForKey:的原理"></a>取值方法valueForKey:的原理</h2><p><img src="/images/valueForKey取值的原理示意图.png" alt="valueForKey取值的原理示意图" title="valueForKey取值的原理示意图"></p>
+<p>valueForKey:方法底层实现原理如下：</p>
+<p>（1）首先会按照顺序依次查找getKey:、key、isKey、_key:这四个方法，只要找到这四个方法当中的任何一个就直接调用该方法；</p>
+<p>（2）如果没有找到，那么这个时候会查看accessInstanceVariablesDirectly方法的返回值，如果返回的是NO（也就是不允许直接访问成员变量），那么会调用valueforUndefineKey:方法，并抛出异常“NSUnknownKeyException”；</p>
+<p>（3）如果accessInstanceVariablesDirectly方法返回的是YES，也就是说可以访问其成员变量，那么就会按照顺序依次查找 _key、_isKey、key、isKey这四个成员变量，如果找到了，就直接取值；如果依然没有找到成员变量，那么会调用valueforUndefineKey方法，并抛出异常“NSUnknownKeyException”。</p>
+<h2 id="KVC总结"><a href="#KVC总结" class="headerlink" title="KVC总结"></a>KVC总结</h2><p>题目1:通过KVC修改属性会触发KVO吗?原理是什么？</p>
+<p>答:会触发KVO。即使没有声明属性，只有成员变量，只要accessInstanceVariablesDirectly返回的是YES，允许访问其成员变量，那么不管有没有调用setter方法，通过KVC修改成员变量的值，都能触发KVO。这也说明通过KVC内部实现了willChangeValueForKey:方法和didChangeValueForKey:方法。</p>
+<p>题目2：KVC的赋值和取值过程是怎样的？（原理是什么？）</p>
+<p>参考上面的赋值和取值示意图。</p>
 
       
     </div>
@@ -361,7 +386,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/点滴感悟/" rel="tag"># 点滴感悟</a>
+            <a href="/tags/KVC/" rel="tag"># KVC</a>
           
         </div>
       
@@ -374,15 +399,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2019/06/03/iOS开发之KVO底层实现原理篇/" rel="next" title="iOS开发之KVO底层实现原理篇">
+                <i class="fa fa-chevron-left"></i> iOS开发之KVO底层实现原理篇
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/03/OC对象本质原理分析/" rel="prev" title="OC对象的本质探究">
-                OC对象的本质探究 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -530,7 +555,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从心开始-扬帆起航"><span class="nav-number">1.</span> <span class="nav-text">从心开始,扬帆起航</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#不破楼兰终不还"><span class="nav-number">2.</span> <span class="nav-text">不破楼兰终不还</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#KVC底层原理分析"><span class="nav-number">1.</span> <span class="nav-text">KVC底层原理分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#赋值方法setValue-forKey-的原理"><span class="nav-number">1.1.</span> <span class="nav-text">赋值方法setValue:forKey:的原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#取值方法valueForKey-的原理"><span class="nav-number">1.2.</span> <span class="nav-text">取值方法valueForKey:的原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVC总结"><span class="nav-number">1.3.</span> <span class="nav-text">KVC总结</span></a></li></ol></li></ol></div>
             
 
           </div>
