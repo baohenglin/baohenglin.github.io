@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="点滴感悟,">
+  <meta name="keywords" content="Category,">
 
 
 
@@ -79,18 +79,20 @@
 
 
 
-<meta name="description" content="从心开始,扬帆起航&amp;emsp;&amp;emsp;自2015年开始学习iOS软件开发以来，转眼间，已经将近4年了。一路走来，有困惑，也有收获，有迷茫，也有喜悦。不过令自己欣慰的是，自己始终在技术这条道路上坚持着。内心坚信只要不断努力，坚持付出，日益精进，终有“会当凌绝顶，一览众山小”的那一刻！&amp;emsp;&amp;emsp;目前自己在iOS开发方面基础知识还不够扎实，对底层原理了解不够，甚至一知半解，也就是说对专">
-<meta name="keywords" content="点滴感悟">
+<meta name="description" content="Category是Objective-C 2.0之后增加的语言特性，Category的主要作用是为已经存在的类添加方法。Category是对装饰模式的典型实践（装饰模式(Decorator)是指在不修改原有类的前提下，动态地给这个类添加一些方法）。 Category的底层结构 category的加载处理过程（1）通过Runtime加载某个类的所有Category数据; （2）把所有Category">
+<meta name="keywords" content="Category">
 <meta property="og:type" content="article">
-<meta property="og:title" content="千里之行  始于足下">
-<meta property="og:url" content="http://yoursite.com/2019/03/20/千里之行，始于足下/index.html">
+<meta property="og:title" content="iOS之Category原理浅析">
+<meta property="og:url" content="http://yoursite.com/2019/06/11/iOS之Category原理浅析/index.html">
 <meta property="og:site_name" content="平凡的世界">
-<meta property="og:description" content="从心开始,扬帆起航&amp;emsp;&amp;emsp;自2015年开始学习iOS软件开发以来，转眼间，已经将近4年了。一路走来，有困惑，也有收获，有迷茫，也有喜悦。不过令自己欣慰的是，自己始终在技术这条道路上坚持着。内心坚信只要不断努力，坚持付出，日益精进，终有“会当凌绝顶，一览众山小”的那一刻！&amp;emsp;&amp;emsp;目前自己在iOS开发方面基础知识还不够扎实，对底层原理了解不够，甚至一知半解，也就是说对专">
+<meta property="og:description" content="Category是Objective-C 2.0之后增加的语言特性，Category的主要作用是为已经存在的类添加方法。Category是对装饰模式的典型实践（装饰模式(Decorator)是指在不修改原有类的前提下，动态地给这个类添加一些方法）。 Category的底层结构 category的加载处理过程（1）通过Runtime加载某个类的所有Category数据; （2）把所有Category">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-06T03:33:57.234Z">
+<meta property="og:image" content="http://yoursite.com/images/Category底层原理示意图.png">
+<meta property="og:updated_time" content="2019-06-11T08:31:00.499Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="千里之行  始于足下">
-<meta name="twitter:description" content="从心开始,扬帆起航&amp;emsp;&amp;emsp;自2015年开始学习iOS软件开发以来，转眼间，已经将近4年了。一路走来，有困惑，也有收获，有迷茫，也有喜悦。不过令自己欣慰的是，自己始终在技术这条道路上坚持着。内心坚信只要不断努力，坚持付出，日益精进，终有“会当凌绝顶，一览众山小”的那一刻！&amp;emsp;&amp;emsp;目前自己在iOS开发方面基础知识还不够扎实，对底层原理了解不够，甚至一知半解，也就是说对专">
+<meta name="twitter:title" content="iOS之Category原理浅析">
+<meta name="twitter:description" content="Category是Objective-C 2.0之后增加的语言特性，Category的主要作用是为已经存在的类添加方法。Category是对装饰模式的典型实践（装饰模式(Decorator)是指在不修改原有类的前提下，动态地给这个类添加一些方法）。 Category的底层结构 category的加载处理过程（1）通过Runtime加载某个类的所有Category数据; （2）把所有Category">
+<meta name="twitter:image" content="http://yoursite.com/images/Category底层原理示意图.png">
 
 
 
@@ -120,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/03/20/千里之行，始于足下/">
+  <link rel="canonical" href="http://yoursite.com/2019/06/11/iOS之Category原理浅析/">
 
 
 
 
 
-  <title>千里之行  始于足下 | 平凡的世界</title>
+  <title>iOS之Category原理浅析 | 平凡的世界</title>
   
 
 
@@ -253,7 +255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/20/千里之行，始于足下/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/11/iOS之Category原理浅析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="BaoHengLin">
@@ -270,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">千里之行  始于足下</h1>
+          <h1 class="post-title" itemprop="name headline">iOS之Category原理浅析</h1>
         
 
         <div class="post-meta">
@@ -282,8 +284,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-20T22:11:49+08:00">
-                2019-03-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-11T16:24:02+08:00">
+                2019-06-11
               </time>
             
 
@@ -305,8 +307,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Thinking/" itemprop="url" rel="index">
-                    <span itemprop="name">Thinking</span>
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
                   </a>
                 </span>
 
@@ -323,8 +325,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/03/20/千里之行，始于足下/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/20/千里之行，始于足下/" itemprop="commentCount"></span>
+                <a href="/2019/06/11/iOS之Category原理浅析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/11/iOS之Category原理浅析/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -332,7 +334,7 @@
 
           
           
-             <span id="/2019/03/20/千里之行，始于足下/" class="leancloud_visitors" data-flag-title="千里之行  始于足下">
+             <span id="/2019/06/11/iOS之Category原理浅析/" class="leancloud_visitors" data-flag-title="iOS之Category原理浅析">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -357,7 +359,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  837 字
+                  1.6k 字
                 </span>
               
 
@@ -373,7 +375,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  2 分钟
+                  5 分钟
                 </span>
               
             </div>
@@ -394,8 +396,94 @@
       
 
       
-        <h1 id="从心开始-扬帆起航"><a href="#从心开始-扬帆起航" class="headerlink" title="从心开始,扬帆起航"></a>从心开始,扬帆起航</h1><p>&emsp;&emsp;自2015年开始学习iOS软件开发以来，转眼间，已经将近4年了。一路走来，有困惑，也有收获，有迷茫，也有喜悦。不过令自己欣慰的是，自己始终在技术这条道路上坚持着。内心坚信只要不断努力，坚持付出，日益精进，终有“会当凌绝顶，一览众山小”的那一刻！<br>&emsp;&emsp;目前自己在iOS开发方面基础知识还不够扎实，对底层原理了解不够，甚至一知半解，也就是说对专业知识掌握的深度不够。此外，技术视野的宽度亟待拓展。现在是原生与前端共舞的时代，仅仅掌握iOS开发知识是远远不能满足企业招聘要求的。React Native、Flutter、HTML5、JavaScript、小程序等跨端开发知识都应该积极地去学习和拥抱。正如戴铭老师在其技术专栏中所讲的那样“这些技术看似纷繁杂乱，实则殊途同归。它们背后都是一些通用的底层技术和创新的设计思想。只要静下心来好好研究下近几年浪潮留下的关键技术，在这个基础上再去理解各种新技术，必然会驾轻就熟”，沉下心来慢慢学，勤思多练，学深学透，方能达到举一反三，融会贯通的学习目标。</p>
-<h1 id="不破楼兰终不还"><a href="#不破楼兰终不还" class="headerlink" title="不破楼兰终不还"></a>不破楼兰终不还</h1><p>&emsp;&emsp;我们每一位软件开发者,作为靠技术立身的手艺人,都不应该将自己局限于某一个特定而狭窄的技术领域。比如目前从事iOS开发工作,不能仅仅只会iOS开发,也要积极学习其他的软件开发技能，尽量做到“一专多能”。陈皓老师在其极客时间技术专栏《左耳听风》中向我们展示了精彩纷呈的编程世界，也详尽阐述了从码农到程序员再到架构师的练级攻略。这也让我意识到了“码农”、“程序员”、“工程师”和“架构师”之间的差别。“有修养的程序员才有可能成长为真正的工程师和架构师，而没有修养的程序员只能沦为码农，这是码农和工程师的关键区分点。“<br>&emsp;&emsp;摒弃理论知识无用的错误观点。自己之所以感觉理论知识没什么用，是因为自己还处于初级水平，还没有找到相应的应用场景来感受那些理论知识的强大威力。数据结构与算法、操作系统、编译原理、数据库原理、计算机原理……这些基础的理论知识，是你想要成为一个专家必须要学习的，更何况这些知识都是计算机这门科学最为经典且充满思想智慧的精华。<br>&emsp;&emsp;自己未来要走的路还很长，需要学习的东西还有很多。要拿出“十年磨一剑”的决心和魄力来不断突破自己，提升实力。“黄沙百战穿金甲，不破楼兰终不还”！祝福自己，也祝福每一个有技术信仰的程序员越来越优秀！</p>
+        <p>Category是Objective-C 2.0之后增加的语言特性，Category的主要作用是为已经存在的类添加方法。Category是对装饰模式的典型实践（装饰模式(Decorator)是指在不修改原有类的前提下，动态地给这个类添加一些方法）。</p>
+<h2 id="Category的底层结构"><a href="#Category的底层结构" class="headerlink" title="Category的底层结构"></a>Category的底层结构</h2><p><img src="/images/Category底层原理示意图.png" alt="Category的底层结构示意图" title="Category的底层结构示意图"></p>
+<h2 id="category的加载处理过程"><a href="#category的加载处理过程" class="headerlink" title="category的加载处理过程"></a>category的加载处理过程</h2><p>（1）通过Runtime加载某个类的所有Category数据;</p>
+<p>（2）把所有Category的方法、属性、协议数据，合并到一个大数组中，后面参与编译的Category数据，会在数组的前面；</p>
+<p>（3）将合并后的分类数据（方法、属性、协议），插入到类原来数据的前面。</p>
+<p>【注意】category并没有完全的替换掉原有类的同名方法，category的方法被放置在新方法列表的前面，而原来类的方法被放到后面，在runtime中，遍历方法列表查找时，找到了category的方法后，就会停止遍历，这就是我们平时所说的“覆盖”方法。</p>
+<p>&emsp;&emsp;某个类如果存在两个category，而且这两个Category中存在方法名相同的方法，那么根据buildPhases-&gt;Compile Sources里面的从上至下的编译顺序，会调用后参与编译的那个分类的方法。</p>
+<h2 id="Category的局限性"><a href="#Category的局限性" class="headerlink" title="Category的局限性"></a>Category的局限性</h2><ul>
+<li>Category只能给某个现有的类添加方法，不能添加成员变量；</li>
+<li>Category中也可以添加属性，只不过@property只会生成setter和getter的声明，不会生成setter方法和getter方法的实现，也不会自动合成带下划线的成员变量；</li>
+<li>如果category中的方法和类中原有方法同名，运行时会优先调用category中的方法。也就是，category中的方法会覆盖掉类中原有的方法。所以开发中尽量保证不要让分类中的方法和原有类中的方法名相同。避免出现这种情况的解决方案是给分类的方法名统一添加前缀。比如category_。</li>
+</ul>
+<h2 id="load方法"><a href="#load方法" class="headerlink" title="+load方法"></a>+load方法</h2><h3 id="load方法的特点"><a href="#load方法的特点" class="headerlink" title="+load方法的特点"></a>+load方法的特点</h3><ul>
+<li>+load方法会在runtime加载类、分类时调用其对应的+load方法。</li>
+<li>每个类、分类的+load方法，在程序运行过程中只调用一次。</li>
+</ul>
+<h3 id="load方法的调用顺序"><a href="#load方法的调用顺序" class="headerlink" title="+load方法的调用顺序"></a>+load方法的调用顺序</h3><p>根据Apple的objc-runtime-new.mm的源码分析可知+load方法的调用顺序如下：</p>
+<p>1.先调用类的+load方法</p>
+<ul>
+<li>按照编译的先后顺序调用（先编译，先调用）</li>
+<li>调用子类的+load方法之前会先调用父类的+load</li>
+</ul>
+<p>2.再调用分类的+load方法</p>
+<ul>
+<li>按照编译先后顺序调用（先编译，先调用）</li>
+</ul>
+<h2 id="initialize方法"><a href="#initialize方法" class="headerlink" title="+initialize方法"></a>+initialize方法</h2><h3 id="initialize方法的特点"><a href="#initialize方法的特点" class="headerlink" title="+initialize方法的特点"></a>+initialize方法的特点</h3><ul>
+<li>+initialize方法会在类第一次接收到消息的时候调用</li>
+</ul>
+<h3 id="initialize方法的调用顺序"><a href="#initialize方法的调用顺序" class="headerlink" title="+initialize方法的调用顺序"></a>+initialize方法的调用顺序</h3><p>调用顺序：先调用父类的+initialize，再调用子类的+initialize。也就是先初始化父类，再初始化子类，且每个类只会初始化1次。</p>
+<p>+initialize和+load的最大区别是，+initialize是通过objc_msgSend进行调用的，而+load方法是通过函数指针直接调用+load方法。正因为+initialize是通过objc_msgSend进行调用的，所以+initialize有以下特点：</p>
+<ul>
+<li>如果子类没有实现+initialize，会调用父类的+initialize（所以父类的+initialize可能会被调用多次）；</li>
+<li>如果分类实现了+initialize，就覆盖类本身的+initialize调用。</li>
+</ul>
+<h2 id="有关Category常见的面试题"><a href="#有关Category常见的面试题" class="headerlink" title="有关Category常见的面试题"></a>有关Category常见的面试题</h2><p>1.Category的使用场合是什么?</p>
+<ul>
+<li>可以为现有类添加新的方法；</li>
+<li>模拟多继承</li>
+<li>将一个类中的代码分散出来管理（将类的实现分布到几个不同文件中）</li>
+<li>把framework的私有方法公开</li>
+</ul>
+<p>2.Category的实现原理是什么?</p>
+<p>&emsp;&emsp;Category编译之后的底层结构是struct_category_t，里面存储着分类的对象方法、类方法、属性、协议信息。在程序运行的时候，runtime会将Category的数据，合并到类信息中（类对象、元类对象中）</p>
+<p>3.Category和Class Extension的区别是什么?</p>
+<p>&emsp;&emsp;Class Extension是在编译期决定，Category由运行时决定。也就是说Class extension在编译的时候，它的数据就已经包含在类信息中；而Category（分类）是在运行时，才会将分类数据合并到类信息中（类对象、元类对象中）。</p>
+<p>4.Category能否添加成员变量?如果可以,如何给Category添加成员变量?</p>
+<p>默认情况下，由于分类底层结构的限制，不能直接给Category添加成员变量,但是可以间接实现。</p>
+<p>&emsp;&emsp;通过“关联对象”的方式来给Category添加成员变量。“&lt;objc/runtime.h&gt;”中提供的关联对象的API有以下3个：</p>
+<ul>
+<li>(1)添加关联对象</li>
+</ul>
+<p>&emsp;&emsp; void objc_setAssociatedObject(id object, const void * key,id value, objc_AssociationPolicy policy)</p>
+<ul>
+<li>(2)获得关联对象</li>
+</ul>
+<p>&emsp;&emsp;id objc_getAssociatedObject(id object, const void * key)</p>
+<ul>
+<li>(3)移除所有的关联对象</li>
+</ul>
+<p>&emsp;&emsp; void objc_removeAssociatedObjects(id object)</p>
+<p>5.Category中有load方法吗?load方法是什么时候调用的?load方法能继承吗?</p>
+<p>&emsp;&emsp;有+load方法。load方法在runtime（运行时）加载类、分类的时候调用。+load方法能继承。<br>【注意】+load方法一般都由系统自动调用，不手动调用。</p>
+<p>6.load方法和initialize方法的区别是什么?它们在category中的调用顺序是怎样的?以及出现继承时它们之间的调用过程是怎样的?</p>
+<p>区别：</p>
+<ul>
+<li><p>（1）调用方式不同。load是根据函数地址直接调用，而initialize是通过objc_msgSend调用</p>
+</li>
+<li><p>（2）调用时刻不同。load是runtime加载类、分类的时候调用（只会调用1次），而initialize是类第一次接收到消息的时候调用，每一个类只会initialize一次（父类的initialize方法可能会被调用多次）。</p>
+</li>
+</ul>
+<p>load、initialize的调用顺序：</p>
+<ol>
+<li>load</li>
+</ol>
+<p>1&gt; 先调用类的+load方法</p>
+<p>a)按照编译的先后顺序调用（先编译，先调用）</p>
+<p>b)调用子类的+load方法之前会先调用父类的+load</p>
+<p>2&gt; 再调用分类的+load方法</p>
+<p>a)按照编译先后顺序调用（先编译，先调用）</p>
+<ol start="2">
+<li>initialize</li>
+</ol>
+<p>1&gt; 先初始化父类;</p>
+<p>2&gt; 再初始化子类(可能最终调用的是父类的initialize方法)。</p>
+<h2 id="OC的类扩展-Class-Extension"><a href="#OC的类扩展-Class-Extension" class="headerlink" title="OC的类扩展(Class Extension)"></a>OC的类扩展(Class Extension)</h2><p>类扩展(Class Extension),也称为匿名分类。可以为原来的类 扩展一些属性、成员变量以及方法。</p>
+<p><br><br><br><br><br></p>
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接:"></a>参考链接:</h4><p><a href="https://www.jianshu.com/p/f673206c5abc" target="_blank" rel="noopener">https://www.jianshu.com/p/f673206c5abc</a></p>
 
       
     </div>
@@ -413,7 +501,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/点滴感悟/" rel="tag"># 点滴感悟</a>
+            <a href="/tags/Category/" rel="tag"># Category</a>
           
         </div>
       
@@ -426,15 +514,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2019/06/06/KVC的底层实现原理/" rel="next" title="KVC的底层实现原理">
+                <i class="fa fa-chevron-left"></i> KVC的底层实现原理
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/03/OC对象本质原理分析/" rel="prev" title="OC对象的本质探究">
-                OC对象的本质探究 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -585,7 +673,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从心开始-扬帆起航"><span class="nav-number">1.</span> <span class="nav-text">从心开始,扬帆起航</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#不破楼兰终不还"><span class="nav-number">2.</span> <span class="nav-text">不破楼兰终不还</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Category的底层结构"><span class="nav-number">1.</span> <span class="nav-text">Category的底层结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#category的加载处理过程"><span class="nav-number">2.</span> <span class="nav-text">category的加载处理过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Category的局限性"><span class="nav-number">3.</span> <span class="nav-text">Category的局限性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#load方法"><span class="nav-number">4.</span> <span class="nav-text">+load方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#load方法的特点"><span class="nav-number">4.1.</span> <span class="nav-text">+load方法的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#load方法的调用顺序"><span class="nav-number">4.2.</span> <span class="nav-text">+load方法的调用顺序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#initialize方法"><span class="nav-number">5.</span> <span class="nav-text">+initialize方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#initialize方法的特点"><span class="nav-number">5.1.</span> <span class="nav-text">+initialize方法的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#initialize方法的调用顺序"><span class="nav-number">5.2.</span> <span class="nav-text">+initialize方法的调用顺序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#有关Category常见的面试题"><span class="nav-number">6.</span> <span class="nav-text">有关Category常见的面试题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OC的类扩展-Class-Extension"><span class="nav-number">7.</span> <span class="nav-text">OC的类扩展(Class Extension)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参考链接"><span class="nav-number">7.0.1.</span> <span class="nav-text">参考链接:</span></a></li></ol></li></ol></div>
             
 
           </div>
