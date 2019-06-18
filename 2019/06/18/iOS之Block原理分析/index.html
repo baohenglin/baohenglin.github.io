@@ -93,11 +93,11 @@
 <meta property="og:image" content="http://yoursite.com/images/应用程序的内存分布示意图.png">
 <meta property="og:image" content="http://yoursite.com/images/3种block产生场景示意图.png">
 <meta property="og:image" content="http://yoursite.com/images/block调用copy方法.png">
-<meta property="og:image" content="http://yoursite.com/images/__block的内存管理示意图.png">
+<meta property="og:image" content="http://yoursite.com/images/block的内存管理示意图.png">
 <meta property="og:image" content="http://yoursite.com/images/block移除时的内存管理.png">
-<meta property="og:image" content="http://yoursite.com/images/__block的__forwarding指针.png">
+<meta property="og:image" content="http://yoursite.com/images/block的__forwarding指针.png">
 <meta property="og:image" content="http://yoursite.com/images/循环引用示意图.png">
-<meta property="og:updated_time" content="2019-06-18T05:39:05.013Z">
+<meta property="og:updated_time" content="2019-06-18T05:41:18.531Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS之Block原理分析">
 <meta name="twitter:description" content="block的本质block本质上是一个OC对象,因为它内部有一个isa指针。更确切地说，block是封装了函数调用以及函数调用环境的OC的对象。 下面我们从实际代码出发一步一步来探究block的本质。首先我们在main.m中定义一个block。代码如下： 123456789101112131415int main(int argc, const char * argv[]) &amp;#123;    @">
@@ -533,7 +533,7 @@
 </li>
 </ul>
 <p>__block的内存管理示意图，如下所示：</p>
-<p><img src="/images/__block的内存管理示意图.png" alt="__block的内存管理示意图.png"></p>
+<p><img src="/images/block的内存管理示意图.png" alt="__block的内存管理示意图.png"></p>
 <p>假设有两个block：block0和block1，而且这两个block都访问了<strong>block变量。一开始这两个block都在栈上，</strong>block变量也在栈上。当block0被拷贝到堆上时，会自动将block内部使用到的<strong>block变量也拷贝到堆上，而且被拷贝到堆上的block0对被拷贝到栈上的</strong>block变量是强引用；block1也会被拷贝到堆上面，由于之前已经将<strong>block变量拷贝到堆上了，所以这一次不再拷贝，而且被拷贝到堆上的block1堆</strong>block变量也是强引用。</p>
 <ul>
 <li>当block从堆中被移除时，会调用block内部的dispose函数(<strong>main_block_dispose_0函数)，</strong>main_block_dispose_0函数内部会调用_Block_object_dispose函数，_Block_object_dispose函数会自动释放引用的__block变量,类似于release操作。</li>
@@ -557,7 +557,7 @@
 <p>其中，构造函数__main_block_func_0中有下列赋值代码：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(age-&gt;__forwarding-&gt;age) = 12;</span><br></pre></td></tr></table></figure>
 <p>赋值过程是这样的：首先利用结构体<strong>Block_byref_age_0，查找到里面的</strong>forwarding成员变量，对于栈上的block，<strong>forwarding指向自身，也就是指向</strong>Block_byref_age_0，之后通过<strong>forwarding找到自身(</strong>Block_byref_age_0)，最后找到里面的age成员变量进行赋值。那么为什么要先利用<strong>forwarding指针查找一次自己呢？这是为了保证拷贝到堆上的block访问外部的</strong>block变量时，被访问的__block变量也必须存放在堆空间。</p>
-<p><img src="/images/__block的__forwarding指针.png" alt="__block的__forwarding指针.png"></p>
+<p><img src="/images/block的__forwarding指针.png" alt="__block的__forwarding指针.png"></p>
 <p>从上图可知，对于block从栈copy到堆的情况，结构体<strong>Block_byref_age_0中的</strong>forwarding的指针不再指向自身，而是指向copy到堆空间的<strong>Block_byref_age_0，堆上的</strong>Block_byref_age_0的<strong>forwarding指针指向自身，此时执行(age-&gt;</strong>forwarding-&gt;age) = 12赋值操作时，改变的age变量就是存储在堆空间的age变量了，而不是栈中的age变量。</p>
 <!--## 被__block修饰的对象类型-->
 <h2 id="循环引用"><a href="#循环引用" class="headerlink" title="循环引用"></a>循环引用</h2><p>导致循环引用的原因是Block通过内部的__strong self指针持有某对象，同时该对象通过其成员变量_block持有该Block，从而使对象和Block二者相互强引用，都不能被释放。</p>
