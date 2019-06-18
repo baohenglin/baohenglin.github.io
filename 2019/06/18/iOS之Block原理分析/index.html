@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="iOS之Block探究篇 block的本质block本质上是一个OC对象,因为它内部有一个isa指针。更确切地说，block是封装了函数调用以及函数调用环境的OC的对象。 下面我们从实际代码出发一步一步来探究block的本质。首先我们在main.m中定义一个block。代码如下： 123456789101112131415int main(int argc, const char * argv[]">
+<meta name="description" content="block的本质block本质上是一个OC对象,因为它内部有一个isa指针。更确切地说，block是封装了函数调用以及函数调用环境的OC的对象。 下面我们从实际代码出发一步一步来探究block的本质。首先我们在main.m中定义一个block。代码如下： 123456789101112131415int main(int argc, const char * argv[]) &amp;#123;    @">
 <meta name="keywords" content="block">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS之Block原理分析">
 <meta property="og:url" content="http://yoursite.com/2019/06/18/iOS之Block原理分析/index.html">
 <meta property="og:site_name" content="平凡的世界">
-<meta property="og:description" content="iOS之Block探究篇 block的本质block本质上是一个OC对象,因为它内部有一个isa指针。更确切地说，block是封装了函数调用以及函数调用环境的OC的对象。 下面我们从实际代码出发一步一步来探究block的本质。首先我们在main.m中定义一个block。代码如下： 123456789101112131415int main(int argc, const char * argv[]">
+<meta property="og:description" content="block的本质block本质上是一个OC对象,因为它内部有一个isa指针。更确切地说，block是封装了函数调用以及函数调用环境的OC的对象。 下面我们从实际代码出发一步一步来探究block的本质。首先我们在main.m中定义一个block。代码如下： 123456789101112131415int main(int argc, const char * argv[]) &amp;#123;    @">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/images/block底层实现逻辑图.png">
 <meta property="og:image" content="http://yoursite.com/images/block在内存中的布局.png">
@@ -97,10 +97,10 @@
 <meta property="og:image" content="http://yoursite.com/images/block移除时的内存管理.png">
 <meta property="og:image" content="http://yoursite.com/images/__block的__forwarding指针.png">
 <meta property="og:image" content="http://yoursite.com/images/循环引用示意图.png">
-<meta property="og:updated_time" content="2019-06-18T05:34:16.575Z">
+<meta property="og:updated_time" content="2019-06-18T05:39:05.013Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS之Block原理分析">
-<meta name="twitter:description" content="iOS之Block探究篇 block的本质block本质上是一个OC对象,因为它内部有一个isa指针。更确切地说，block是封装了函数调用以及函数调用环境的OC的对象。 下面我们从实际代码出发一步一步来探究block的本质。首先我们在main.m中定义一个block。代码如下： 123456789101112131415int main(int argc, const char * argv[]">
+<meta name="twitter:description" content="block的本质block本质上是一个OC对象,因为它内部有一个isa指针。更确切地说，block是封装了函数调用以及函数调用环境的OC的对象。 下面我们从实际代码出发一步一步来探究block的本质。首先我们在main.m中定义一个block。代码如下： 123456789101112131415int main(int argc, const char * argv[]) &amp;#123;    @">
 <meta name="twitter:image" content="http://yoursite.com/images/block底层实现逻辑图.png">
 
 
@@ -405,8 +405,7 @@
       
 
       
-        <p>iOS之Block探究篇</p>
-<h2 id="block的本质"><a href="#block的本质" class="headerlink" title="block的本质"></a>block的本质</h2><p>block本质上是一个OC对象,因为它内部有一个isa指针。更确切地说，block是封装了函数调用以及函数调用环境的OC的对象。</p>
+        <h2 id="block的本质"><a href="#block的本质" class="headerlink" title="block的本质"></a>block的本质</h2><p>block本质上是一个OC对象,因为它内部有一个isa指针。更确切地说，block是封装了函数调用以及函数调用环境的OC的对象。</p>
 <p>下面我们从实际代码出发一步一步来探究block的本质。首先我们在main.m中定义一个block。代码如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">int main(int argc, const char * argv[]) &#123;</span><br><span class="line">    @autoreleasepool &#123;</span><br><span class="line">        int age = 10;</span><br><span class="line">        //定义block</span><br><span class="line">        void(^HLblock)(void) = ^()&#123;</span><br><span class="line">            NSLog(@&quot;age is %d&quot;,age);</span><br><span class="line">            //age is 10</span><br><span class="line">        &#125;;</span><br><span class="line">        </span><br><span class="line">        age = 20;</span><br><span class="line">        //调用block</span><br><span class="line">        HLblock();</span><br><span class="line">    &#125;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后利用Clang编译器终端命令将OC代码转化为底层的C/C++代码。Clang终端命令如下：</p>
