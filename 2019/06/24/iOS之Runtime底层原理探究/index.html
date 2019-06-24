@@ -95,7 +95,7 @@
 <meta property="og:image" content="http://yoursite.com/images/objc_msgSend执行流程-消息发送阶段示意图.png">
 <meta property="og:image" content="http://yoursite.com/images/objc_msgSend执行流程02-动态方法解析流程示意图.png">
 <meta property="og:image" content="http://yoursite.com/images/objc_msgSend的执行流程03-消息转发流程示意图.png">
-<meta property="og:updated_time" content="2019-06-24T08:57:12.366Z">
+<meta property="og:updated_time" content="2019-06-24T10:56:32.932Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS之Runtime底层原理探究">
 <meta name="twitter:description" content="Objective-C语言是一门动态性比较强的语言，与C、C++有很大不同。OC语言可以做到在程序运行时动态修改之前编译好的代码逻辑。也可以动态地添加某些方法的实现。 Objective-C的动态性是由Runtime API来支撑和实现的。Runtime即运行时，它提供了一套C语言的API。Rumtime的源码是开源的，Runtime的源码是基于C/C++/汇编语言编写的。 Apple源码下载地址">
@@ -615,7 +615,11 @@
 <p>需要特别注意的是：NSObject的superclass指针指向NSObject的类对象，也就是基类的superclass指针指向基类的Class对象。这一点比较特殊。</p>
 <p>（5）以下代码能不能执行成功？如果可以，打印结果是什么？</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">@interface HLPerson : NSObject</span><br><span class="line">@property (nonatomic, copy) NSString *name;</span><br><span class="line">- (void)print;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation HLPerson</span><br><span class="line">- (void)print &#123;</span><br><span class="line">	NSLog(@&quot;my name is %@&quot;,self.name);</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implemetation ViewController</span><br><span class="line">- (void)viewDidLoad&#123;</span><br><span class="line">	[super viewDidLoad];</span><br><span class="line">	</span><br><span class="line">	NSString *string = @&quot;123&quot;;</span><br><span class="line">	id cls = [HLPerson class];</span><br><span class="line">	void *obj = &amp;cls;</span><br><span class="line">	[(__bridge id)obj print];</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-<p>能执行成功。打印结果是“my name is 123”</p>
+<p>能执行成功。打印结果是“my name is 123”<br><br><br><br><br><br><br><br><br><br></p>
+<p>参考链接:</p>
+<p><a href="https://www.ianisme.com/ios/2019.html" target="_blank" rel="noopener">Objective-C Runtime 1小时入门教程</a></p>
+<p><a href="https://developer.apple.com/documentation/objectivec/objective-c_runtime" target="_blank" rel="noopener">Objective-C Runtime Reference</a></p>
+<p><a href="http://yulingtianxia.com/blog/2014/11/05/objective-c-runtime/" target="_blank" rel="noopener">Objective-C Runtime</a></p>
 
       
     </div>
@@ -839,7 +843,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">27.1k</span>
+    <span title="Site words total count">27.2k</span>
   
 </div>
 
