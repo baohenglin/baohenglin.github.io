@@ -88,14 +88,14 @@
 <meta property="og:description" content="Objective-C语言是一门动态性比较强的语言，与C、C++有很大不同。OC语言可以做到在程序运行时动态修改之前编译好的代码逻辑。也可以动态地添加某些方法的实现。 Objective-C的动态性是由Runtime API来支撑和实现的。Runtime即运行时，它提供了一套C语言的API。Rumtime的源码是开源的，Runtime的源码是基于C/C++/汇编语言编写的。 Apple源码下载地址">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/images/&ISA_MASK.png">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-f1d74a6969bad946.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-e15b20432cffefc8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-cf61122383a90122.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-079113457883962d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-f7eb12d7a09294a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-0b4dc6651b207d00.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4164292-9b726d453273809c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2019-06-24T08:46:54.428Z">
+<meta property="og:image" content="http://yoursite.com/images/objc_class底层实现结构图.png">
+<meta property="og:image" content="http://yoursite.com/images/class_rw_t底层结构示意图.png">
+<meta property="og:image" content="http://yoursite.com/images/class_ro_t底层结构示意图.png">
+<meta property="og:image" content="http://yoursite.com/images/TypeEncoding指令表.png">
+<meta property="og:image" content="http://yoursite.com/images/objc_msgSend执行流程-消息发送阶段示意图.png">
+<meta property="og:image" content="http://yoursite.com/images/objc_msgSend执行流程02-动态方法解析流程示意图.png">
+<meta property="og:image" content="http://yoursite.com/images/objc_msgSend的执行流程03-消息转发流程示意图.png">
+<meta property="og:updated_time" content="2019-06-24T08:54:43.293Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS之Runtime底层原理探究">
 <meta name="twitter:description" content="Objective-C语言是一门动态性比较强的语言，与C、C++有很大不同。OC语言可以做到在程序运行时动态修改之前编译好的代码逻辑。也可以动态地添加某些方法的实现。 Objective-C的动态性是由Runtime API来支撑和实现的。Runtime即运行时，它提供了一套C语言的API。Rumtime的源码是开源的，Runtime的源码是基于C/C++/汇编语言编写的。 Apple源码下载地址">
@@ -425,14 +425,14 @@
 <li>has_sidetable_rc：引用计数器是否过大无法存储在isa中，如果为1，那么引用计数会存储在一个叫SideTable的类的属性中。</li>
 <li>extra_rc：里面存储的值是引用计数器减1后的值。</li>
 </ul>
-<h2 id="Class对象的底层结构"><a href="#Class对象的底层结构" class="headerlink" title="Class对象的底层结构"></a>Class对象的底层结构</h2><p><img src="https://upload-images.jianshu.io/upload_images/4164292-f1d74a6969bad946.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2019-05-31 下午4.25.46.png"></p>
+<h2 id="Class对象的底层结构"><a href="#Class对象的底层结构" class="headerlink" title="Class对象的底层结构"></a>Class对象的底层结构</h2><p><img src="/images/objc_class底层实现结构图.png" alt="屏幕快照 2019-05-31 下午4.25.46.png"></p>
 <p>由上图可知，结构体objc_class中的成员变量bits &amp;FAST_DATA_MASK得到class_rw_t的地址，进而可以读取其中的方法列表methods（对象方法或类方法）、属性列表properties、协议列表protocols等信息。结构体class_rw_t中的方法列表、属性列表、协议列表都包含当前类以及当前类的分类的方法列表、属性列表、协议列表。</p>
 <h3 id="class-rw-t"><a href="#class-rw-t" class="headerlink" title="class_rw _t"></a>class_rw _t</h3><p>结构体class_rw _t里面的methods、properties、protocols都是二维数组，是可读可写的，包含了类的初始内容和分类的内容。</p>
 <p>结构体class_ rw_t底层结构示意图，如下所示：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/4164292-e15b20432cffefc8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="class_rw_t底层结构示意图.png"></p>
+<p><img src="/images/class_rw_t底层结构示意图.png" alt="class_rw_t底层结构示意图.png"></p>
 <h3 id="class-ro-t"><a href="#class-ro-t" class="headerlink" title="class_ro _t"></a>class_ro _t</h3><p>class_rw _ t 结构体里面的 class_ro _ t *ro 指针指向结构体class_ro _t。 class _ ro _t 里面的baseMethodList、baseProtocols、ivars、baseProperties是一维数组，而且是只读的，只包含了类的初始内容。</p>
 <p>结构体 class_ro _t 底层结构示意图，如下所示：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/4164292-cf61122383a90122.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="class_ro_t底层结构示意图.png"></p>
+<p><img src="/images/class_ro_t底层结构示意图.png" alt="class_ro_t底层结构示意图.png"></p>
 <h3 id="method-t结构体"><a href="#method-t结构体" class="headerlink" title="method_t结构体"></a>method_t结构体</h3><p>method_ list_ t 数组里面存放的是method_t结构体。method _t是对方法/函数的封装。</p>
 <p>method_t结构体底层源码如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">struct method_t &#123;</span><br><span class="line">    SEL name;//函数名</span><br><span class="line">    const char *types;//字符串编码，里面存放着返回值类型、参数类型。</span><br><span class="line">    MethodListIMP imp;//指向函数的指针（函数地址）</span><br><span class="line"></span><br><span class="line">    struct SortBySELAddress :</span><br><span class="line">        public std::binary_function&lt;const method_t&amp;,</span><br><span class="line">                                    const method_t&amp;, bool&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        bool operator() (const method_t&amp; lhs,</span><br><span class="line">                         const method_t&amp; rhs)</span><br><span class="line">        &#123; return lhs.name &lt; rhs.name; &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
@@ -442,7 +442,7 @@
 <p>IMP：代表函数的具体实现。</p>
 <p>imp：是指向函数的指针（函数地址）。</p>
 <h3 id="Type-Encoding-类型编码"><a href="#Type-Encoding-类型编码" class="headerlink" title="Type Encoding(类型编码)"></a>Type Encoding(类型编码)</h3><p>iOS中提供了一个叫做@encode的指令，可以将具体的类型表示成字符串编码。比如@encode(id)转化为“@”，@encode(SEL)转化为“:”。</p>
-<p>@encode指令表如下图所示：<br><img src="https://upload-images.jianshu.io/upload_images/4164292-079113457883962d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="TypeEncoding指令表.png"></p>
+<p>@encode指令表如下图所示：<br><img src="/images/TypeEncoding指令表.png" alt="TypeEncoding指令表.png"></p>
 <h3 id="cache-t-cache（方法缓存）"><a href="#cache-t-cache（方法缓存）" class="headerlink" title="cache_t cache（方法缓存）"></a>cache_t cache（方法缓存）</h3><p>Class内部结构中有一个“方法缓存”，也就是 struct objc_ class中有一个成员变量 cache_ t cache。cache_t cache是用“<strong>散列表</strong>(也称为哈希表)”来缓存曾经调用过的方法的，这样就提高方法的查找速度。</p>
 <p>为什么说使用cache_t方法缓存技术可以提高查找方法的速度呢？首先我们来回顾一下OC中是如何调用对象方法的。举个例子，比如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HLPerson *person = [[HLPerson alloc]init];</span><br><span class="line">[person test];</span><br></pre></td></tr></table></figure>
@@ -475,12 +475,12 @@
 <ul>
 <li>（1）<strong>消息发送阶段</strong>。objc_msgSend(person, @selector(test))，在此阶段会查找test是否存在，如果存在，直接调用，如果不存在，再进行步骤（2）动态方法解析。</li>
 </ul>
-<p><img src="https://upload-images.jianshu.io/upload_images/4164292-f7eb12d7a09294a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="objc_msgSend执行流程-消息发送阶段示意图.png"></p>
+<p><img src="/images/objc_msgSend执行流程-消息发送阶段示意图.png" alt="objc_msgSend执行流程-消息发送阶段示意图.png"></p>
 <p><strong>消息发送流程</strong>：首先判断receiver是否为nil，为nil的话，直接retrun。如果receiver不为nil，那么就利用receiver的isa找到receiver的Class对象或Meta-Class对象。接下来，先从receiver自己的Class的cache中查找方法，如果找到了该方法，直接调用，并结束查找。如果没有找到方法，那么就从receiver的Class对象的class_rw_t中methods数组里查找方法，如果数组已经排序，采用“二分查找”；如果没有排序，则采用普通遍历查找。如果在methods数组里找到了方法，则调用方法，结束查找并将该方法缓存到receiver的Class的cache中；如果没有找到方法，那么就通过receiver Class的superclass指针找到SuperClass，接下来从SuperClass的cache中查找方法，如果找到了方法，则调用该方法，结束查找，并将该方法缓存到receiver的Class对象的cache中；如果没有找到方法，接着会从SuperClass的class _rw _t 中查找方法，同样地，也存在采用“二分查找”和“遍历查找”的判断，如果找到了方法，则调用方法，结束查找并将该方法缓存到receiver的Class的cache中；如果没有找到方法，此时会判断是否存在更高一级的superClass（父类），如果存在superClass，那么继续从superClass的cache中查找方法，继续上面的所述的在superClass中的查找过程；如果上层不存在superClass了，那么此时就会进入<strong>动态方法解析阶段</strong>。</p>
 <ul>
 <li>（2）<strong>动态方法解析阶段</strong>。此阶段允许开发者利用runtime运行时机制动态添加方法实现。如果在动态方法解析阶段，开发者没有执行任何操作，那么将进入“消息转发”阶段。</li>
 </ul>
-<p><img src="https://upload-images.jianshu.io/upload_images/4164292-0b4dc6651b207d00.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="objc_msgSend执行流程02-动态方法解析流程示意图.png"></p>
+<p><img src="/images/objc_msgSend执行流程02-动态方法解析流程示意图.png" alt="objc_msgSend执行流程02-动态方法解析流程示意图.png"></p>
 <p><strong>动态方法解析流程</strong>：首先判断“是否已经动态解析”(if(resolver &amp;&amp; !triedResolver))，如果没有动态解析过，那么就会调用+resolveInstanceMethod:或者+resolveClassMethod:方法来动态解析方法，开发者可以在+resolveInstanceMethod:或者+resolveClassMethod:方法里面利用runtime API来动态添加方法实现；动态解析完成后，会标记为已经动态解析(triedResolver = YES)，重新执行“消息发送”的流程，也就是重新从receiver Class的cache中查找方法。如果一开始判断为经动态解析过，那么将转入“<strong>消息转发阶段</strong>”。需要特别注意的是：如果是为“类方法”动态添加实现的话，class_addMethod的第一个参数必须是Meta-Class对象,也就是objc_getClass(self)。</p>
 <p>那么在+resolveInstanceMethod方法中具体如何动态添加方法实现呢？有三种方法：</p>
 <p>方法1：推荐使用此方法</p>
@@ -492,7 +492,7 @@
 <ul>
 <li>（3）<strong>消息转发阶段</strong>。消息转发是指将方法转发给其他调用者。</li>
 </ul>
-<p><img src="https://upload-images.jianshu.io/upload_images/4164292-9b726d453273809c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="objc_msgSend的执行流程03-消息转发流程示意图.png"></p>
+<p><img src="/images/objc_msgSend的执行流程03-消息转发流程示意图.png" alt="objc_msgSend的执行流程03-消息转发流程示意图.png"></p>
 <p><strong>消息转发流程</strong>：首先调用forwardingTargetForSelector:方法，如果方法返回值不为nil，那么就执行objc_msgSend(返回值,SEL)，如果返回值为nil，则调用methodSignnatureForSelector:方法，如果返回值为nil，则调用doesNotRecognizeSelector:方法并抛出错误”unrecognized selector sent to instance”；如果methodSignnatureForSelector:方法的返回值不为nil，就会调用forwardInvocation:方法，开发者可以在forwardInvocation:方法里自定义任何处理逻辑。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">//消息转发</span><br><span class="line">- (id)forwardingTargetForSelector:(SEL)aSelector</span><br><span class="line">&#123;</span><br><span class="line">    if (aSelector == @selector(test)) &#123;</span><br><span class="line">        //objc_msgSend(cat,aSelector);</span><br><span class="line">        return [[Cat alloc]init];</span><br><span class="line">        //如果返回nil，则调用methodSignatureForSelector:方法</span><br><span class="line">//        return nil;</span><br><span class="line">    &#125;</span><br><span class="line">    return [super forwardingTargetForSelector:aSelector];</span><br><span class="line">&#125;</span><br><span class="line">//方法签名：返回值类型、参数类型</span><br><span class="line">- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector</span><br><span class="line">&#123;</span><br><span class="line">    if (aSelector == @selector(test)) &#123;</span><br><span class="line">        //方法签名,如果返回的方法签名为空，那么将不再调用-(void)forwardInvocation:(NSInvocation *)anInvocation方法，并抛出错误</span><br><span class="line">        return [NSMethodSignature signatureWithObjCTypes:&quot;v16@0:8&quot;];</span><br><span class="line">        //如果返回nil，调用doesNotRecognizeSelector:方法并抛出错误&quot;unrecognized selector sent to instance&quot;;如果返回不为nil，则调用forwardInvocation:方法。</span><br><span class="line">//        return nil;</span><br><span class="line">    &#125;</span><br><span class="line">    return [super methodSignatureForSelector:aSelector];</span><br><span class="line">&#125;</span><br><span class="line">//NSInvocation封装了一个方法调用，包括方法调用者、方法名、方法参数</span><br><span class="line">//anInvocation.target 方法调用者</span><br><span class="line">//anInvocation.selector 方法名</span><br><span class="line">//[anInvocation getArgument:NULL atIndex:0];</span><br><span class="line">-(void)forwardInvocation:(NSInvocation *)anInvocation</span><br><span class="line">&#123;</span><br><span class="line">    [anInvocation invokeWithTarget:[[Cat alloc]init]];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>如果以上3个阶段都无法完成消息调用，那么将调用doesNotRecognizeSelector:方法报错”unrecognized selector sent to instance XXX”。</p>
