@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="多线程/GCD,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="iOS的几种多线程方案 GCDGCD的常用函数GCD(GCD源码)中有2个用来执行任务的函数。分别是：  采用同步的方式执行任务  12//queue代表队列，block代表任务dispatch_sync(dispatch_queue_t queue, dispatch_block_t block); 具体使用如下： 123456//获取全局并发队列    dispatch_queue_t que">
+<meta name="keywords" content="多线程&#x2F;GCD">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS之多线程探究">
+<meta property="og:url" content="http://yoursite.com/2019/07/02/iOS之多线程探究/index.html">
+<meta property="og:site_name" content="平凡的世界">
+<meta property="og:description" content="iOS的几种多线程方案 GCDGCD的常用函数GCD(GCD源码)中有2个用来执行任务的函数。分别是：  采用同步的方式执行任务  12//queue代表队列，block代表任务dispatch_sync(dispatch_queue_t queue, dispatch_block_t block); 具体使用如下： 123456//获取全局并发队列    dispatch_queue_t que">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/iOS中的常见多线程方案.png">
+<meta property="og:image" content="http://yoursite.com/images/各种队列的执行效果.png">
+<meta property="og:image" content="http://yoursite.com/images/多线程安全隐患分析示意图.png">
+<meta property="og:image" content="http://yoursite.com/images/多线程安全隐患加锁示意图.png">
+<meta property="og:updated_time" content="2019-07-02T10:28:54.843Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS之多线程探究">
+<meta name="twitter:description" content="iOS的几种多线程方案 GCDGCD的常用函数GCD(GCD源码)中有2个用来执行任务的函数。分别是：  采用同步的方式执行任务  12//queue代表队列，block代表任务dispatch_sync(dispatch_queue_t queue, dispatch_block_t block); 具体使用如下： 123456//获取全局并发队列    dispatch_queue_t que">
+<meta name="twitter:image" content="http://yoursite.com/images/iOS中的常见多线程方案.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/07/02/iOS之多线程探究/">
+
+
+
+
+
+  <title>iOS之多线程探究 | 平凡的世界</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">平凡的世界</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">黄沙百战穿金甲 不破楼兰终不还</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/02/iOS之多线程探究/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="BaoHengLin">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="平凡的世界">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iOS之多线程探究</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-02T18:24:59+08:00">
+                2019-07-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/07/02/iOS之多线程探究/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/02/iOS之多线程探究/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/07/02/iOS之多线程探究/" class="leancloud_visitors" data-flag-title="iOS之多线程探究">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5.3k 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  22 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="iOS的几种多线程方案"><a href="#iOS的几种多线程方案" class="headerlink" title="iOS的几种多线程方案"></a>iOS的几种多线程方案</h2><p><img src="/images/iOS中的常见多线程方案.png" alt="iOS中的常见多线程方案.png"></p>
+<h2 id="GCD"><a href="#GCD" class="headerlink" title="GCD"></a>GCD</h2><h3 id="GCD的常用函数"><a href="#GCD的常用函数" class="headerlink" title="GCD的常用函数"></a>GCD的常用函数</h3><p>GCD(<a href="https://github.com/apple/swift-corelibs-libdispatch" target="_blank" rel="noopener">GCD源码</a>)中有2个用来执行任务的函数。分别是：</p>
+<ul>
+<li>采用同步的方式执行任务</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//queue代表队列，block代表任务</span><br><span class="line">dispatch_sync(dispatch_queue_t queue, dispatch_block_t block);</span><br></pre></td></tr></table></figure>
+<p>具体使用如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//获取全局并发队列</span><br><span class="line">    dispatch_queue_t queue = dispatch_get_global_queue(0, 0);</span><br><span class="line">    dispatch_sync(queue, ^&#123;</span><br><span class="line">         NSLog(@&quot;执行同步任务- %@&quot;,[NSThread currentThread]);</span><br><span class="line">        //2019-06-30 16:04:15.286156+0800 GCD_001[26633:1513561] 执行同步任务- &lt;NSThread: 0x6000027953c0&gt;&#123;number = 1, name = main&#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>采用异步的方式执行任务</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dispatch_async(dispatch_queue_t queue, dispatch_block_t block);</span><br></pre></td></tr></table></figure>
+<p>具体使用，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//获取全局并发队列</span><br><span class="line">    dispatch_queue_t queue = dispatch_get_global_queue(0, 0);</span><br><span class="line">    dispatch_async(queue, ^&#123;</span><br><span class="line">        NSLog(@&quot;执行异步任务- %@&quot;,[NSThread currentThread]);</span><br><span class="line">        //2019-06-30 16:04:15.286429+0800 GCD_001[26633:1513619] 执行异步任务- &lt;NSThread: 0x6000027f4000&gt;&#123;number = 3, name = (null)&#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="GCD的队列"><a href="#GCD的队列" class="headerlink" title="GCD的队列"></a>GCD的队列</h3><p>GCD的队列可以分为两大类型，分别是</p>
+<ul>
+<li><strong>并发队列(Concurrent Dispatch Queue)</strong></li>
+</ul>
+<p>并发队列是指可以让多个任务并发(同时)执行（自动开启多个线程同时执行任务）的队列。并发功能只有在异步(dispatch_async)函数下才有效。</p>
+<ul>
+<li><strong>串行队列(Serial Dispatch Queue)</strong></li>
+</ul>
+<p>串行队列是指让任务一个接着一个地执行的队列（一个任务执行完毕后，再执行下一个任务）。</p>
+<p>【注意】主队列(dispatch_queue queue = dispatch_get_main_queue();)其实也是串行队列。</p>
+<h3 id="同步-异步、并发-串行"><a href="#同步-异步、并发-串行" class="headerlink" title="同步/异步、并发/串行"></a>同步/异步、并发/串行</h3><p>(1)同步和异步主要影响的是：能不能开启新的线程。</p>
+<ul>
+<li><p>同步(dispatch_sync)：在当前线程中执行任务，不具备开启新线程的能力。</p>
+</li>
+<li><p>异步(dispatch_async)：在新的线程中执行任务，具备开启新线程的能力。使用异步(dispatch_async)方式执行任务时只能说具备了开启新线程的能力，而并不一定开启新线程。比如传入的是主队列，那么就不会开启新的线程。</p>
+</li>
+</ul>
+<p>(2)并发和串行这两种队列类型主要影响的是：任务的执行方式。</p>
+<ul>
+<li><p>并发：多个任务并发（同步）执行</p>
+</li>
+<li><p>串行：一个任务执行完毕后，再执行下一个任务。</p>
+</li>
+</ul>
+<h3 id="各种队列的执行效果"><a href="#各种队列的执行效果" class="headerlink" title="各种队列的执行效果"></a>各种队列的执行效果</h3><p><img src="/images/各种队列的执行效果.png" alt="各种队列的执行效果.png"></p>
+<p>【注意】手动创建的串行队列指的是不包含主队列(也是串行队列)的串行队列。</p>
+<p>由上表可知，只要是同步任务(sync)不管是哪种队列，都不会开启新线程，并且都是以串行方式执行任务；此外，只要是主队列（dispatch_get_main_queue();），不管是同步(sync)还是异步(async)都不会开启新线程，并且都是以串行方式执行任务。</p>
+<h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>所谓死锁，通常是指有两个线程T1和T2都卡住了，并且等待对方完成某些操作。T1不能完成是因为它在等待T2执行完成。而T2也不能完成，因为它在等待T1执行完成。也就是二者都处于“等待对方完成”的状态，于是就导致了死锁（DeadLock）。</p>
+<p>以下代码会产生死锁吗？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    NSLog(@&quot;执行任务1&quot;);</span><br><span class="line">    dispatch_queue_t queue = dispatch_get_main_queue();</span><br><span class="line">    dispatch_sync(queue, ^&#123;</span><br><span class="line">        NSLog(@&quot;执行任务2&quot;);</span><br><span class="line">    &#125;);</span><br><span class="line">    NSLog(@&quot;执行任务3&quot;);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码会产生死锁问题。</p>
+<p>那么什么情况下会产生死锁呢？</p>
+<p>是否产生死锁的判断标准：当使用<strong>dispatch_sync</strong>往<strong>当前串行队列</strong>中添加任务时，会卡住当前的串行队列，进而产生死锁。也就是同时满足下面这三个条件会产生死锁：</p>
+<ul>
+<li>(1)使用dispatch_sync函数</li>
+<li>(2)当前队列(同一个队列)</li>
+<li>(3)串行队列</li>
+</ul>
+<p>【注意】只要同时满足以上3个条件就一定会产生死锁。所以解锁死锁，只需要打破以上3个条件中的任意一个，就可以解决死锁问题。</p>
+<h2 id="队列组的使用"><a href="#队列组的使用" class="headerlink" title="队列组的使用"></a>队列组的使用</h2><p>队列组的使用场景：利用GCD实现以下功能——异步并发执行任务1、任务2，等任务1、任务2都执行完毕后，再回到主线程执行任务3。</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">- (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event</span><br><span class="line">&#123;</span><br><span class="line">    //创建队列组</span><br><span class="line">    dispatch_group_t group = dispatch_group_create();</span><br><span class="line">    //创建并发队列</span><br><span class="line">    dispatch_queue_t queue = dispatch_queue_create(&quot;my_queue&quot;, DISPATCH_QUEUE_CONCURRENT);</span><br><span class="line">    //添加异步任务</span><br><span class="line">    dispatch_group_async(group, queue, ^&#123;</span><br><span class="line">        for (int i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">            NSLog(@&quot;任务1---%@&quot;,[NSThread currentThread]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    dispatch_group_async(group, queue, ^&#123;</span><br><span class="line">        for (int i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">            NSLog(@&quot;任务2---%@&quot;,[NSThread currentThread]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    //等前面的任务执行完毕后，会自动执行这个任务</span><br><span class="line">    //方法1</span><br><span class="line">//    dispatch_group_notify(group, queue, ^&#123;</span><br><span class="line">//        dispatch_async(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">//            for (int i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">//                NSLog(@&quot;任务3---%@&quot;,[NSThread currentThread]);</span><br><span class="line">//            &#125;</span><br><span class="line">//        &#125;);</span><br><span class="line">//    &#125;);</span><br><span class="line">    //方法2</span><br><span class="line">    dispatch_group_notify(group, dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        for (int i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">            NSLog(@&quot;任务3---%@&quot;,[NSThread currentThread]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="多线程的安全隐患"><a href="#多线程的安全隐患" class="headerlink" title="多线程的安全隐患"></a>多线程的安全隐患</h2><ul>
+<li>资源共享。一块资源可能会被多个线程共享，也就是多个线程可能会访问同一块资源（比如多个线程访问同一个对象、同一个变量、同一个文件），很容易引发<strong>数据错乱和数据安全问题</strong>。</li>
+</ul>
+<p>多线程安全隐患分析示意图：</p>
+<p><img src="/images/多线程安全隐患分析示意图.png" alt="多线程安全隐患分析示意图.png"></p>
+<p>多线程安全问题的解决方案：使用<strong>线程同步</strong>技术（同步：协同步调，按预定的先后次序进行）。常用的线程同步技术是：<strong>加锁</strong></p>
+<p><img src="/images/多线程安全隐患加锁示意图.png" alt="多线程安全隐患加锁示意图.png"></p>
+<h2 id="iOS中的线程同步方案"><a href="#iOS中的线程同步方案" class="headerlink" title="iOS中的线程同步方案"></a>iOS中的线程同步方案</h2><ul>
+<li>(1)OSSpinLock：等待锁的线程会处于忙等（busy-wait）状态，一直占用CPU资源，所以OSSpinLock是自旋锁(是一种高级锁)。目前OSSpinLock已不再安全，可能会出现优先级反转(Priority Inversion)的问题。有可能产生优先级反转的原因：如果等待锁的线程优先级比较高，它会一直占用着CPU资源，优先级低的线程就无法释放锁。所以在项目中不推荐使用OSSpinLock。</li>
+</ul>
+<p>那么OSSpinLock为什么会产生优先级反转呢？</p>
+<p>具体来说，如果一个低优先级的线程获得锁并访问共享资源，这时一个高优先级的线程也尝试获得这把锁，它会处于SpinLock的busy-wait（忙等）状态从而占用大量CPU资源，此时低优先级线程无法与高优先级线程争夺CPU时间，从而导致任务迟迟完成不了，进而无法释放lock，从而导致优先级反转。</p>
+<p>需要先导入头文件 #import &lt;libkern/OSAtomic.h&gt;，用法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//初始化</span><br><span class="line">OSSpinLock lock = OS_SPINLOCK_INIT;</span><br><span class="line">//尝试加锁（如果需要等待就不加锁，直接返回false，如果不需要等待就加锁，返回true）</span><br><span class="line">bool result = OSSpinLockTry(&amp;lock);</span><br><span class="line">//加锁</span><br><span class="line">OSSpinLockLock(&amp;lock);</span><br><span class="line">//解锁</span><br><span class="line">OSSpinLockUnlock(&amp;_moneyLock);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2)os_unfair_lock：os_unfair_lock用于取代不安全的OSSpinLock，从iOS10开始才支持。从底层调用来看，等待os_unfair_lock锁的线程会处于休眠状态，而不是像自旋锁那样忙等，所以os_unfair_lock是互斥锁，是一种low-level lock(低级锁：低级锁的特点是等不到锁的时候就进入休眠)。</li>
+</ul>
+<p>使用时需要导入头文件 #import &lt;os/lock.h&gt;,具体用法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//初始化</span><br><span class="line">os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;</span><br><span class="line">//尝试加锁</span><br><span class="line">os_unfair_lock_trylock(&amp;lock);</span><br><span class="line">//加锁</span><br><span class="line">os_unfair_lock_lock(&amp;lock);</span><br><span class="line">//解锁</span><br><span class="line">os_unfair_lock_unlock(&amp;lock);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(3)pthread_mutex：等待锁的线程会处于休眠状态，所以pthread_mutex是“互斥锁”，是一种low-level lock。</li>
+</ul>
+<p>使用时需要导入头文件 #import &lt;pthread.h&gt;，具体用法如下：</p>
+<p>首先声明一个属性锁：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@property (nonatomic, assign) pthread_mutex_t mutexLock;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">//初始化属性</span><br><span class="line">pthread_mutexattr_t attr;</span><br><span class="line">pthread_mutexattr_init(&amp;attr);</span><br><span class="line">//PTHREAD_MUTEX_DEFAULT:普通锁</span><br><span class="line">pthread_mutexattr_settype(&amp;attr, PTHREAD_MUTEX_NORMAL);</span><br><span class="line">//初始化锁</span><br><span class="line">pthread_mutex_init(&amp;_mutexLock,&amp;attr);</span><br><span class="line">//销毁锁的属性</span><br><span class="line">pthread_mutexattr_destroy(&amp;attr);</span><br><span class="line">//加锁</span><br><span class="line">pthread_mutex_lock(&amp;_mutexLock);</span><br><span class="line">//解锁</span><br><span class="line">pthread_mutex_unlock(&amp;_mutexLock);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- (void)dealloc</span><br><span class="line">&#123;</span><br><span class="line">    //销毁锁</span><br><span class="line">    pthread_mutex_destroy(&amp;_mutexLock);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>pthread_mutex-递归锁</strong></p>
+<p>将pthread_mutexattr_settype(&amp;attr, PTHREAD_MUTEX_RECURSIVE);的第二个参数设置为PTHREAD_MUTEX_RECURSIVE，表示该锁是递归锁。除此属性值不同之外，其他用法与pthread_mutex默认的普通锁(PTHREAD_MUTEX_NORMAL)完全一致。</p>
+<p>递归锁的特点：允许同一条线程对同一把锁进行重复加锁而不会引发死锁。因为只是允许同一条线程重复加锁，所以递归锁依然能够保证线程安全。</p>
+<p><strong>pthread_mutex-条件锁</strong></p>
+<p>具体用法参考下面的“多线程的线程间依赖”。</p>
+<ul>
+<li>(4)dispatch_semaphore：semaphore叫做“信号量”，信号量的初始值，可以用来控制线程并发访问的最大数量。<strong>信号量的初始值为1，表示同时只允许1条线程访问资源，保证线程同步(实现线程同步的一种方法)</strong>。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//信号量的初始值</span><br><span class="line">int value = 1;</span><br><span class="line">//初始化信号量</span><br><span class="line">dispatch_semaphore_t semaphore = dispatch_semaphore_create(value);</span><br><span class="line">//如果信号量的值 &gt; 0，就让信号量的值减1，然后继续往下执行后面的代码</span><br><span class="line">//如果信号量的值 &lt;=0，当前线程就会休眠等待，直到信号量的值变成 &gt; 0，然后继续往下执行代码</span><br><span class="line">dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);</span><br><span class="line">//让信号量的值加1</span><br><span class="line">dispatch_semaphore_signal(semaphore);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(5)dispatch_queue(DISPATCH_QUEUE_SERIAL)：直接使用GCD的串行队列，也是可以实现线程同步的。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Dispatch_Queue_SerialDemo.h&quot;</span><br><span class="line">@interface Dispatch_Queue_SerialDemo ()</span><br><span class="line">@property (nonatomic, strong) dispatch_queue_t ticketQueue;</span><br><span class="line">@property (nonatomic, strong) dispatch_queue_t moneyQueue;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation Dispatch_Queue_SerialDemo</span><br><span class="line">- (instancetype)init</span><br><span class="line">&#123;</span><br><span class="line">    if (self = [super init]) &#123;</span><br><span class="line">        _ticketQueue = dispatch_queue_create(&quot;ticketQueue&quot;, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">        _moneyQueue = dispatch_queue_create(&quot;moneyQueue&quot;, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">    &#125;</span><br><span class="line">    return self;</span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_saveMoney</span><br><span class="line">&#123;</span><br><span class="line">    dispatch_sync(_moneyQueue, ^&#123;</span><br><span class="line">        [super hl_saveMoney];</span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_drawMoney</span><br><span class="line">&#123;</span><br><span class="line">    dispatch_sync(_moneyQueue, ^&#123;</span><br><span class="line">        </span><br><span class="line">        [super hl_drawMoney];</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_saleTicket</span><br><span class="line">&#123;</span><br><span class="line">    dispatch_sync(_ticketQueue, ^&#123;</span><br><span class="line">        [super hl_saleTicket];</span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(6)NSLock：是对pthread_mutex普通锁的OC形式的封装。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;NSLockDemo.h&quot;</span><br><span class="line">@interface NSLockDemo ()</span><br><span class="line">@property(nonatomic, strong)NSLock *ticketLock;</span><br><span class="line">@property(nonatomic, strong)NSLock *moneyLock;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation NSLockDemo</span><br><span class="line">- (instancetype)init</span><br><span class="line">&#123;</span><br><span class="line">    if (self = [super init]) &#123;</span><br><span class="line">        self.ticketLock = [[NSLock alloc] init];</span><br><span class="line">        self.moneyLock = [[NSLock alloc] init];</span><br><span class="line">    &#125;</span><br><span class="line">    return self;</span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_saveMoney</span><br><span class="line">&#123;</span><br><span class="line">    [self.moneyLock lock];</span><br><span class="line">    [super hl_saveMoney];</span><br><span class="line">    [self.moneyLock unlock];</span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_drawMoney</span><br><span class="line">&#123;</span><br><span class="line">    [self.moneyLock lock];</span><br><span class="line">    [super hl_drawMoney];</span><br><span class="line">    [self.moneyLock unlock];</span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_saleTicket</span><br><span class="line">&#123;</span><br><span class="line">    [self.moneyLock lock];</span><br><span class="line">    [super hl_saleTicket];</span><br><span class="line">    [self.moneyLock unlock];</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(7)NSRecursiveLock：NSRecursiveLock也是对pthread_mutex递归锁OC形式的封装，API跟NSLock基本一致。</li>
+<li>(8)NSCondition：NSCondition条件锁，是对锁mutex和条件cond的OC封装。</li>
+</ul>
+<p>NSCondition的应用场景是某条线程，比如线程A执行到某处时发现条件不满足，此时就会在此处等待，并打开这把锁，允许其他线程去执行任务（加锁解锁）。当其他线程执行完任务后，会解锁，并发送一个符合条件的信号，此时条件满足了，线程A就会给这把锁重新加锁，并往下继续执行代码。NSConditionLock主要用在按照一定顺序执行任务的场合。这也使二者的区别。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@interface NSCondition : NSObject &lt;NSLocking&gt; &#123;</span><br><span class="line">@private</span><br><span class="line">    void *_priv;</span><br><span class="line">&#125;</span><br><span class="line">//等待</span><br><span class="line">- (void)wait;</span><br><span class="line">- (BOOL)waitUntilDate:(NSDate *)limit;</span><br><span class="line">//唤醒一条正在等待的线程</span><br><span class="line">- (void)signal;</span><br><span class="line">//广播，唤起所有等待的线程</span><br><span class="line">- (void)broadcast;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>NSCondition遵守了NSLocking协议，使用的时候同样是lock，unlock加解锁。</p>
+<p>具体用法，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;NSConditionDemo.h&quot;</span><br><span class="line"></span><br><span class="line">@interface NSConditionDemo ()</span><br><span class="line">@property (nonatomic, strong) NSCondition *condition;//条件</span><br><span class="line">@property (nonatomic, strong) NSMutableArray *dataArr;</span><br><span class="line">@end</span><br><span class="line">@implementation NSConditionDemo</span><br><span class="line"></span><br><span class="line">- (instancetype)init</span><br><span class="line">&#123;</span><br><span class="line">    if (self = [super init]) &#123;</span><br><span class="line">        self.condition = [[NSCondition alloc] init];</span><br><span class="line">        self.dataArr = [NSMutableArray array];</span><br><span class="line">    &#125;</span><br><span class="line">    return self;</span><br><span class="line">&#125;</span><br><span class="line">- (void)otherTest</span><br><span class="line">&#123;</span><br><span class="line">    [[[NSThread alloc] initWithTarget:self selector:@selector(hl_remove) object:nil] start];</span><br><span class="line">    [[[NSThread alloc] initWithTarget:self selector:@selector(hl_add) object:nil] start];</span><br><span class="line">&#125;</span><br><span class="line">//线程1</span><br><span class="line">- (void)hl_remove</span><br><span class="line">&#123;</span><br><span class="line">    [self.condition lock];</span><br><span class="line">    NSLog(@&quot;hl_remove - begin&quot;);</span><br><span class="line">    if (self.dataArr.count == 0) &#123;</span><br><span class="line">        //等待</span><br><span class="line">        [self.condition wait];</span><br><span class="line">    &#125;</span><br><span class="line">    [self.dataArr removeAllObjects];</span><br><span class="line">    NSLog(@&quot;删除了元素&quot;);</span><br><span class="line">    [self.condition unlock];</span><br><span class="line">&#125;</span><br><span class="line">//线程2</span><br><span class="line">- (void)hl_add</span><br><span class="line">&#123;</span><br><span class="line">     [self.condition lock];</span><br><span class="line">    sleep(1);</span><br><span class="line">    [self.dataArr addObject:@&quot;Test&quot;];</span><br><span class="line">    NSLog(@&quot;添加了元素&quot;);</span><br><span class="line">    //信号：唤醒一个等待该条件的线程</span><br><span class="line">    [self.condition signal];</span><br><span class="line">//    //广播</span><br><span class="line">//    [self.condition broadcast];</span><br><span class="line">    [self.condition unlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(9)NSConditionLock：是对NSCondition的进一步封装，可以设置具体的条件值。<br>API如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@interface NSConditionLock : NSObject &lt;NSLocking&gt; &#123;</span><br><span class="line">@private</span><br><span class="line">    void *_priv;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithCondition:(NSInteger)condition NS_DESIGNATED_INITIALIZER;</span><br><span class="line"></span><br><span class="line">@property (readonly) NSInteger condition;</span><br><span class="line">- (void)lockWhenCondition:(NSInteger)condition;</span><br><span class="line">- (BOOL)tryLock;</span><br><span class="line">- (BOOL)tryLockWhenCondition:(NSInteger)condition;</span><br><span class="line">- (void)unlockWithCondition:(NSInteger)condition;</span><br><span class="line">- (BOOL)lockBeforeDate:(NSDate *)limit;</span><br><span class="line">- (BOOL)lockWhenCondition:(NSInteger)condition beforeDate:(NSDate *)limit;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>具体用法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">@interface NSConditionLockDemo ()</span><br><span class="line">@property (nonatomic, strong) NSConditionLock *conditionLock;//条件</span><br><span class="line">@end</span><br><span class="line">@implementation NSConditionLockDemo</span><br><span class="line"></span><br><span class="line">- (instancetype)init</span><br><span class="line">&#123;</span><br><span class="line">    if (self = [super init]) &#123;</span><br><span class="line">        //将条件锁内部的条件设置为1.</span><br><span class="line">        self.conditionLock = [[NSConditionLock alloc] initWithCondition:1];</span><br><span class="line">    &#125;</span><br><span class="line">    return self;</span><br><span class="line">&#125;</span><br><span class="line">- (void)otherTest</span><br><span class="line">&#123;</span><br><span class="line">    [[[NSThread alloc] initWithTarget:self selector:@selector(hl_threadA) object:nil] start];</span><br><span class="line">    [[[NSThread alloc] initWithTarget:self selector:@selector(hl_threadB) object:nil] start];</span><br><span class="line">&#125;</span><br><span class="line">//线程B</span><br><span class="line">- (void)hl_threadB</span><br><span class="line">&#123;</span><br><span class="line">    //当这把锁内存所存储的条件值为1时，才能加锁，否则，就等待</span><br><span class="line">    [self.conditionLock lockWhenCondition:1];</span><br><span class="line">    NSLog(@&quot;hl_threadB&quot;);</span><br><span class="line">    [self.conditionLock unlockWithCondition:2];</span><br><span class="line">&#125;</span><br><span class="line">//线程A</span><br><span class="line">- (void)hl_threadA</span><br><span class="line">&#123;</span><br><span class="line">    [self.conditionLock lockWhenCondition:2];</span><br><span class="line">    NSLog(@&quot;hl_threadA&quot;);</span><br><span class="line">    [self.conditionLock unlockWithCondition:2];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(10)@synchronized：是对pthread_mutex递归锁的封装，支持递归加锁。其实现源码可以在objc4的objc-sync.mm文件查看。</li>
+</ul>
+<p>@synchronized的实现原理是：利用HashMap（哈希表/散列表），将传入的对象作为key，并通过key获取一把与之对应的锁(Value)；如果传入的对象相同，那么获取的锁也是相同的；如果传入的对象不同，那么得到的是不同的锁。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;SynchronizedDemo.h&quot;</span><br><span class="line">@implementation SynchronizedDemo</span><br><span class="line">//@synchronized在实现线程同步的各种方案中用法最简单，但是@synchronized的性能消耗大。</span><br><span class="line">//存钱取钱共用一把锁，卖票使用另一把锁，这样做是为了可以让存钱取钱操作和卖票操作异步执行。</span><br><span class="line">- (void)hl_saveMoney</span><br><span class="line">&#123;</span><br><span class="line">    @synchronized([self class]) &#123;</span><br><span class="line">        [super hl_saveMoney];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_drawMoney</span><br><span class="line">&#123;</span><br><span class="line">    @synchronized ([self class]) &#123;</span><br><span class="line">        </span><br><span class="line">        [super hl_drawMoney];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_saleTicket</span><br><span class="line">&#123;</span><br><span class="line">    static NSObject *lock;</span><br><span class="line">    static dispatch_once_t onceTocken;</span><br><span class="line">    dispatch_once(&amp;onceTocken, ^&#123;</span><br><span class="line">        lock = [[NSObject alloc]init];</span><br><span class="line">    &#125;);</span><br><span class="line">    @synchronized (lock) &#123;</span><br><span class="line">        [super hl_saleTicket];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h2 id="多线程的线程间依赖"><a href="#多线程的线程间依赖" class="headerlink" title="多线程的线程间依赖"></a>多线程的线程间依赖</h2><p>多线程的线程间依赖指的是有时由于业务需要，只有等执行完线程B中的任务才能再执行线程A中的任务，也就是要求线程A和线程B的执行顺序有要求。那么如何实现线程间依赖呢？可以通过”pthread_mutex-条件锁”来实现。</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Pthread_mutexDemo3.h&quot;</span><br><span class="line">#import &lt;pthread.h&gt;</span><br><span class="line">@interface Pthread_mutexDemo3 ()</span><br><span class="line">@property (nonatomic, assign) pthread_mutex_t mutex;</span><br><span class="line">@property (nonatomic, assign) pthread_cond_t cond;//条件</span><br><span class="line">@property (nonatomic, strong) NSMutableArray *dataArr;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation Pthread_mutexDemo3</span><br><span class="line">- (instancetype)init</span><br><span class="line">&#123;</span><br><span class="line">    if (self = [super init]) &#123;</span><br><span class="line">        //初始化属性</span><br><span class="line">        pthread_mutexattr_t attr;</span><br><span class="line">        pthread_mutexattr_init(&amp;attr);</span><br><span class="line">        pthread_mutexattr_settype(&amp;attr, PTHREAD_MUTEX_RECURSIVE);</span><br><span class="line">        //初始化锁</span><br><span class="line">        pthread_mutex_init(&amp;_mutex, &amp;attr);</span><br><span class="line">        //销毁属性</span><br><span class="line">        pthread_mutexattr_destroy(&amp;attr);</span><br><span class="line">        //初始化条件</span><br><span class="line">        pthread_cond_init(&amp;_cond, NULL);</span><br><span class="line">        self.dataArr = [NSMutableArray array];</span><br><span class="line">    &#125;</span><br><span class="line">    return self;</span><br><span class="line">&#125;</span><br><span class="line">- (void)otherTest</span><br><span class="line">&#123;</span><br><span class="line">    [[[NSThread alloc] initWithTarget:self selector:@selector(hl_remove) object:nil] start];</span><br><span class="line">    [[[NSThread alloc] initWithTarget:self selector:@selector(hl_add) object:nil] start];</span><br><span class="line">&#125;</span><br><span class="line">//线程1</span><br><span class="line"></span><br><span class="line">- (void)hl_remove</span><br><span class="line">&#123;</span><br><span class="line">    pthread_mutex_lock(&amp;_mutex);</span><br><span class="line">    if (self.dataArr.count == 0) &#123;</span><br><span class="line">        //等待(休眠)条件_cond，将锁_mutex放开，被唤醒之后，重新加锁_mutex</span><br><span class="line">        //_cond:将来用来唤醒自己的条件。注意等待的条件必须和唤醒的条件完全一样。</span><br><span class="line">        pthread_cond_wait(&amp;_cond, &amp;_mutex);</span><br><span class="line">    &#125;</span><br><span class="line">    [self.dataArr removeAllObjects];</span><br><span class="line">    pthread_mutex_unlock(&amp;_mutex);</span><br><span class="line">&#125;</span><br><span class="line">//线程2</span><br><span class="line">- (void)hl_add</span><br><span class="line">&#123;</span><br><span class="line">    pthread_mutex_lock(&amp;_mutex);</span><br><span class="line">    [self.dataArr addObject:@&quot;Test&quot;];</span><br><span class="line">    //信号：唤醒一个等待该条件的线程</span><br><span class="line">    pthread_cond_signal(&amp;_cond);</span><br><span class="line">//    //广播:唤醒所有等待该条件的线程</span><br><span class="line">//    pthread_cond_broadcast(&amp;_cond);</span><br><span class="line">    pthread_mutex_unlock(&amp;_mutex);</span><br><span class="line">&#125;</span><br><span class="line">- (void)dealloc</span><br><span class="line">&#123;</span><br><span class="line">    pthread_mutex_destroy(&amp;_mutex);</span><br><span class="line">    pthread_cond_destroy(&amp;_cond);</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h2 id="GCD的dispatch-semaphore-信号量-实现“控制最大并发量”"><a href="#GCD的dispatch-semaphore-信号量-实现“控制最大并发量”" class="headerlink" title="GCD的dispatch_semaphore(信号量)实现“控制最大并发量”"></a>GCD的dispatch_semaphore(信号量)实现“控制最大并发量”</h2><p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;SemaphoreDemo.h&quot;</span><br><span class="line"></span><br><span class="line">@interface SemaphoreDemo ()</span><br><span class="line">@property (nonatomic, strong) dispatch_semaphore_t semaphore;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation SemaphoreDemo</span><br><span class="line">- (instancetype)init</span><br><span class="line">&#123;</span><br><span class="line">    if (self = [super init]) &#123;</span><br><span class="line">        //初始化信号量</span><br><span class="line">        self.semaphore = dispatch_semaphore_create(5);</span><br><span class="line">    &#125;</span><br><span class="line">    return self;</span><br><span class="line">&#125;</span><br><span class="line">- (void)otherTest</span><br><span class="line">&#123;</span><br><span class="line">    for (int i = 0; i &lt; 20; i++) &#123;</span><br><span class="line">        [[[NSThread alloc]initWithTarget:self selector:@selector(test) object:nil] start];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">- (void)test</span><br><span class="line">&#123;</span><br><span class="line">    //如果信号量的值 &gt; 0，就让信号量的值减1，然后继续往下执行代码</span><br><span class="line">    //如果信号量的值 &lt;=0，就会休眠等待。直到信号量的值变成 &gt; 0，然后继续往下执行代码</span><br><span class="line">    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);//DISPATCH_TIME_FOREVER永远等待</span><br><span class="line">    sleep(2);</span><br><span class="line">    NSLog(@&quot;test- %@&quot;,[NSThread currentThread]);</span><br><span class="line">    //dispatch_semaphore_signal作用：使信号量的值加1</span><br><span class="line">    dispatch_semaphore_signal(self.semaphore);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h2 id="GCD的dispatch-semaphore-信号量-实现“线程同步”"><a href="#GCD的dispatch-semaphore-信号量-实现“线程同步”" class="headerlink" title="GCD的dispatch_semaphore(信号量)实现“线程同步”"></a>GCD的dispatch_semaphore(信号量)实现“线程同步”</h2><p>信号量的初始值为1(也就是dispatch_semaphore_create(1))，表示同时只允许1条线程访问资源，可以实现线程同步(实现线程同步的一种方法)</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;SemaphoreDemo2.h&quot;</span><br><span class="line">@interface SemaphoreDemo2 ()</span><br><span class="line">@property(nonatomic, strong) dispatch_semaphore_t ticketSemaphore;</span><br><span class="line">@property(nonatomic, strong) dispatch_semaphore_t moneySemaphore;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation SemaphoreDemo2</span><br><span class="line">- (instancetype)init</span><br><span class="line">&#123;</span><br><span class="line">    if (self = [super init]) &#123;</span><br><span class="line">        //初始化信号量</span><br><span class="line">        self.ticketSemaphore = dispatch_semaphore_create(1);</span><br><span class="line">        self.moneySemaphore = dispatch_semaphore_create(1);</span><br><span class="line">    &#125;</span><br><span class="line">    return self;</span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_saveMoney</span><br><span class="line">&#123;</span><br><span class="line">    dispatch_semaphore_wait(self.moneySemaphore, DISPATCH_TIME_FOREVER);</span><br><span class="line">    [super hl_saveMoney];</span><br><span class="line">    dispatch_semaphore_signal(self.moneySemaphore);</span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_drawMoney</span><br><span class="line">&#123;</span><br><span class="line">    dispatch_semaphore_wait(self.moneySemaphore, DISPATCH_TIME_FOREVER);</span><br><span class="line">    [super hl_drawMoney];</span><br><span class="line">    dispatch_semaphore_signal(self.moneySemaphore);</span><br><span class="line">&#125;</span><br><span class="line">- (void)hl_saleTicket</span><br><span class="line">&#123;</span><br><span class="line">    dispatch_semaphore_wait(self.ticketSemaphore, DISPATCH_TIME_FOREVER);</span><br><span class="line">    [super hl_saleTicket];</span><br><span class="line">    dispatch_semaphore_signal(self.ticketSemaphore);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h2 id="iOS线程同步方案性能比较"><a href="#iOS线程同步方案性能比较" class="headerlink" title="iOS线程同步方案性能比较"></a>iOS线程同步方案性能比较</h2><p>iOS的各种线程同步方案的实际性能在不同系统，不同设备上可能会有些许差异。ibireme曾对各种锁进行了性能测试(<a href="https://github.com/ibireme/tmp" target="_blank" rel="noopener">性能测试代码链接</a>)，大家可以参考。</p>
+<p>性能从高到低排序：</p>
+<ul>
+<li>os_unfair_lock(从iOS10开始支持)</li>
+<li>OSSpinLock(不建议使用)</li>
+<li>dispatch_semaphore(推荐使用)</li>
+<li>pthread_mutex(推荐使用)</li>
+<li>dispatch_queue(DISPATCH_QUEUE_SERIAL)</li>
+<li>NSLock</li>
+<li>NSCondition</li>
+<li>pthread_mutex(recursive)</li>
+<li>NSRecursiveLock</li>
+<li>NSConditionLock</li>
+<li>@synchronized</li>
+</ul>
+<h2 id="自旋锁、互斥锁比较"><a href="#自旋锁、互斥锁比较" class="headerlink" title="自旋锁、互斥锁比较"></a>自旋锁、互斥锁比较</h2><p>1.什么情况下使用自旋锁比较划算？</p>
+<ul>
+<li>预计线程等待锁的时间很短。</li>
+<li>加锁的代码（临界区）经常被调用，但竞争情况很少发生。</li>
+<li>CPU资源不紧张</li>
+<li>多核处理器</li>
+</ul>
+<p>2.什么情况下使用互斥锁比较划算？</p>
+<ul>
+<li>预计线程等待锁的时间较长</li>
+<li>单核处理器</li>
+<li>临界区有IO操作（因为IO操作都占用CPU资源比较大）</li>
+<li>临界区代码复杂或者循环量大</li>
+<li>临界区竞争非常激烈</li>
+</ul>
+<h2 id="atomic"><a href="#atomic" class="headerlink" title="atomic"></a>atomic</h2><p>nonatomic:非原子性</p>
+<p>atomic:原子性。给属性加上atomic修饰，可以保证属性的setter和getter方法都是原子性操作，相当于在getter和setter内部加上了线程同步的锁。但是<strong>atomic并不能保证使用属性的过程是线程安全的</strong>。iOS实际开发中之所以不适用atomic修饰属性是因为atomic非常消耗CPU资源。</p>
+<p>atomic源码实现可以查看objc4的<strong>objc-accessors.mm</strong></p>
+<h2 id="iOS中的读写安全最佳方案"><a href="#iOS中的读写安全最佳方案" class="headerlink" title="iOS中的读写安全最佳方案"></a>iOS中的读写安全最佳方案</h2><p>iOS中的读写，指的是IO操作（文件操作），包括从文件中读取内容和往文件中写入内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    for (int i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">        [[[NSThread alloc] initWithTarget:self selector:@selector(read) object:nil] start];</span><br><span class="line">        [[[NSThread alloc] initWithTarget:self selector:@selector(write) object:nil] start];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">- (void)read</span><br><span class="line">&#123;</span><br><span class="line">    //缺点：读操作也是串行，效率低。</span><br><span class="line">    //优化：允许多条线程同时读取数据。实现“多读单写”</span><br><span class="line">    //多读单写：同一时间，只能有1条线程进行写的操作；同一时间，允许有多个线程进行读的操作；同一时间，不允许既有写的操作，又有读的操作。</span><br><span class="line">    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);</span><br><span class="line">    NSLog(@&quot;%s&quot;,__func__);</span><br><span class="line">    dispatch_semaphore_signal(self.semaphore);</span><br><span class="line">&#125;</span><br><span class="line">- (void)write</span><br><span class="line">&#123;</span><br><span class="line">    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);</span><br><span class="line">    NSLog(@&quot;write ------%s&quot;,__func__);</span><br><span class="line">    dispatch_semaphore_signal(self.semaphore);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上读写操作加锁后虽然是安全的，但是同一时间只能一条线程读取或写入，并不能达到“多读单写”的目标，因此并不是最优解。最优解必须满足“多读单写”的要求：</p>
+<ul>
+<li>(1)同一时间，只能有1条线程进行写的操作；</li>
+<li>(2)同一时间，允许有多个线程进行读的操作；</li>
+<li>(3)同一时间，不允许既有写的操作，又有读的操作。</li>
+</ul>
+<p>那么iOS中实现“多读单写”的方案有哪些呢？</p>
+<ul>
+<li>(1) <strong>pthread_rwlock:读写锁</strong>：等待锁的线程会进入休眠状态。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">pthread_rwlock_t lock;</span><br><span class="line">//初始化锁</span><br><span class="line">pthread_rwlock_init(&amp;_lock, NULL);</span><br><span class="line">//读操作-加锁</span><br><span class="line">pthread_rwlock_rdlock(&amp;_lock);</span><br><span class="line">//多操作-尝试加锁</span><br><span class="line">pthread_rwlock_tryrdlock(&amp;_lock);</span><br><span class="line">//写操作-加锁</span><br><span class="line">pthread_rwlock_wrlock(&amp;_lock);</span><br><span class="line">//写操作-尝试加锁</span><br><span class="line">pthread_rwlock_trywrlock(&amp;_lock);</span><br><span class="line">//解锁</span><br><span class="line">pthread_rwlock_unlock(&amp;_lock);</span><br><span class="line">//销毁</span><br><span class="line">pthread_rwlock_destroy(&amp;_lock);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) <strong>dispatch_barrier_async:异步栅栏调用</strong>：</li>
+</ul>
+<p>dispatch_barrier_async函数传入的<strong>并发队列必须是自己通过dispatch_queue_create创建的</strong>,读操作和写操作要使用同一个并发队列。如果dispatch_barrier_async函数传入的是一个串行队列或者一个全局的并发队列，那这个函数便等同于dispatch_async函数的效果。</p>
+<p>具体使用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//初始化并发队列</span><br><span class="line">dispatch_queue_t queue = dispatch_queue_create(&quot;rw_queue&quot;, DISPATCH_QUEUE_CONCURRENT);</span><br><span class="line">//读操作</span><br><span class="line">dispatch_async(_queue, ^&#123;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line">//写操作</span><br><span class="line">dispatch_barrier_sync(_queue, ^&#123;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>综上所述，使用pthread_rwlock(读写锁)和dispatch_barrier_async(异步栅栏调用)这两种方案都可以解决读写安全问题，实现“多读单写”的功能。</p>
+<h2 id="多线程总结"><a href="#多线程总结" class="headerlink" title="多线程总结"></a>多线程总结</h2><p> 1.简述你对多线程的理解</p>
+<ul>
+<li>多线程的概念和作用</li>
+<li>优势。</li>
+</ul>
+<p>2.iOS的多线程方案有哪几种？你更倾向于哪一种？</p>
+<p>3.用过GCD吗？在项目中具体是如何使用的？</p>
+<p>4.GCD的队列类型有哪些？</p>
+<p>5.说一下OperationQueue和GCD的区别以及各自的优势</p>
+<p>6.线程安全的处理手段有哪些？</p>
+<p>7.OC中的锁你了解哪些？使用以上这些锁需要注意哪些问题？自旋锁和互斥锁的异同？</p>
+<p>(1)什么情况下使用自旋锁比较划算？</p>
+<ul>
+<li>预计线程等待锁的时间很短。</li>
+<li>加锁的代码（临界区）经常被调用，但竞争情况很少发生。</li>
+<li>CPU资源不紧张</li>
+<li>多核处理器</li>
+</ul>
+<p>(2)什么情况下使用互斥锁比较划算？</p>
+<ul>
+<li>预计线程等待锁的时间较长</li>
+<li>单核处理器</li>
+<li>临界区有IO操作（因为IO操作都占用CPU资源比较大）</li>
+<li>临界区代码复杂或者循环量大</li>
+<li>临界区竞争非常激烈</li>
+</ul>
+<p>8.任选C/OC/C++其中一种语言，实现自旋锁和互斥锁？</p>
+<p>9.performSelector: withObject: afterDelay:方法的本质是往RunLoop中添加定时器，子线程默认没有启动RunLoop。</p>
+<h2 id="GNUstep"><a href="#GNUstep" class="headerlink" title="GNUstep"></a>GNUstep</h2><p>GNUstep是GNU计划的项目之一，它将Cocoa的OC库重新实现了一遍并将其开源。虽然GNUstep不是苹果官方源码，但还是具有一定的参考价值。<a href="http://www.gnustep.org/resources/downloads.php" target="_blank" rel="noopener">GNUstep源码地址</a></p>
+<p><br><br><br><br>参考链接：</p>
+<p><a href="https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/" target="_blank" rel="noopener">不再安全的 OSSpinLock</a></p>
+<p><a href="https://juejin.im/post/57f6e9f85bbb50005b126e5f" target="_blank" rel="noopener">深入理解 iOS 开发中的锁</a></p>
+<p><a href="http://yulingtianxia.com/blog/2015/11/01/More-than-you-want-to-know-about-synchronized/" target="_blank" rel="noopener">关于 @synchronized，这儿比你想知道的还要多</a></p>
+<p><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/Introduction/Introduction.html#//apple_ref/doc/uid/10000057" target="_blank" rel="noopener">Threading Programming Guide</a></p>
+<p><a href="https://casatwy.com/pthreadde-ge-chong-tong-bu-ji-zhi.html" target="_blank" rel="noopener">pthread的各种同步机制</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/多线程-GCD/" rel="tag"># 多线程/GCD</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/29/iOS之RunLoop底层原理探究/" rel="next" title="iOS之RunLoop底层原理探究">
+                <i class="fa fa-chevron-left"></i> iOS之RunLoop底层原理探究
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">BaoHengLin</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步，无以至千里；    不积小流，无以成江海</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/baohenglin" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1693288015@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS的几种多线程方案"><span class="nav-number">1.</span> <span class="nav-text">iOS的几种多线程方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCD"><span class="nav-number">2.</span> <span class="nav-text">GCD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GCD的常用函数"><span class="nav-number">2.1.</span> <span class="nav-text">GCD的常用函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCD的队列"><span class="nav-number">2.2.</span> <span class="nav-text">GCD的队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步-异步、并发-串行"><span class="nav-number">2.3.</span> <span class="nav-text">同步/异步、并发/串行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#各种队列的执行效果"><span class="nav-number">2.4.</span> <span class="nav-text">各种队列的执行效果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁"><span class="nav-number">3.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#队列组的使用"><span class="nav-number">4.</span> <span class="nav-text">队列组的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程的安全隐患"><span class="nav-number">5.</span> <span class="nav-text">多线程的安全隐患</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS中的线程同步方案"><span class="nav-number">6.</span> <span class="nav-text">iOS中的线程同步方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程的线程间依赖"><span class="nav-number">7.</span> <span class="nav-text">多线程的线程间依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCD的dispatch-semaphore-信号量-实现“控制最大并发量”"><span class="nav-number">8.</span> <span class="nav-text">GCD的dispatch_semaphore(信号量)实现“控制最大并发量”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCD的dispatch-semaphore-信号量-实现“线程同步”"><span class="nav-number">9.</span> <span class="nav-text">GCD的dispatch_semaphore(信号量)实现“线程同步”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS线程同步方案性能比较"><span class="nav-number">10.</span> <span class="nav-text">iOS线程同步方案性能比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自旋锁、互斥锁比较"><span class="nav-number">11.</span> <span class="nav-text">自旋锁、互斥锁比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#atomic"><span class="nav-number">12.</span> <span class="nav-text">atomic</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS中的读写安全最佳方案"><span class="nav-number">13.</span> <span class="nav-text">iOS中的读写安全最佳方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程总结"><span class="nav-number">14.</span> <span class="nav-text">多线程总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GNUstep"><span class="nav-number">15.</span> <span class="nav-text">GNUstep</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">BaoHengLin</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">35.2k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'dJpP7Hi7hM4Kr2srjNyDGWdo-gzGzoHsz',
+        appKey: '6RSXBimGjY0zY3Qs1B0lkgGz',
+        placeholder: '欢迎留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("dJpP7Hi7hM4Kr2srjNyDGWdo-gzGzoHsz", "6RSXBimGjY0zY3Qs1B0lkgGz");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
