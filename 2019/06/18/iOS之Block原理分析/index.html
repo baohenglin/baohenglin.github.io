@@ -97,7 +97,7 @@
 <meta property="og:image" content="http://yoursite.com/images/block移除时的内存管理.png">
 <meta property="og:image" content="http://yoursite.com/images/block的__forwarding指针.png">
 <meta property="og:image" content="http://yoursite.com/images/循环引用示意图.png">
-<meta property="og:updated_time" content="2019-06-18T06:03:28.402Z">
+<meta property="og:updated_time" content="2019-07-31T03:16:18.282Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS之Block原理分析">
 <meta name="twitter:description" content="block的本质block本质上是一个OC对象,因为它内部有一个isa指针。更确切地说，block是封装了函数调用以及函数调用环境的OC的对象。 下面我们从实际代码出发一步一步来探究block的本质。首先我们在main.m中定义一个block。代码如下： 123456789101112131415int main(int argc, const char * argv[]) &amp;#123;    @">
@@ -534,7 +534,7 @@
 </ul>
 <p>__block的内存管理示意图，如下所示：</p>
 <p><img src="/images/block的内存管理示意图.png" alt="__block的内存管理示意图.png"></p>
-<p>假设有两个block：block0和block1，而且这两个block都访问了<strong>block变量。一开始这两个block都在栈上，</strong>block变量也在栈上。当block0被拷贝到堆上时，会自动将block内部使用到的<strong>block变量也拷贝到堆上，而且被拷贝到堆上的block0对被拷贝到栈上的</strong>block变量是强引用；block1也会被拷贝到堆上面，由于之前已经将<strong>block变量拷贝到堆上了，所以这一次不再拷贝，而且被拷贝到堆上的block1堆</strong>block变量也是强引用。</p>
+<p>假设有两个block：block0和block1，而且这两个block都访问了<strong>block变量。一开始这两个block都在栈上，</strong>block变量也在栈上。当block0被拷贝到堆上时，会自动将block内部使用到的<strong>block变量也拷贝到堆上，而且被拷贝到堆上的block0对被拷贝到堆上的</strong>block变量是强引用；block1也会被拷贝到堆上面，由于之前已经将<strong>block变量拷贝到堆上了，所以这一次不再拷贝，而且被拷贝到堆上的block1堆</strong>block变量也是强引用。</p>
 <ul>
 <li>当block从堆中被移除时，会调用block内部的dispose函数(<strong>main_block_dispose_0函数)，</strong>main_block_dispose_0函数内部会调用_Block_object_dispose函数，_Block_object_dispose函数会自动释放引用的__block变量,类似于release操作。</li>
 </ul>
